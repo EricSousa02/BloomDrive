@@ -121,7 +121,7 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
               Cancelar
             </Button>
             <Button onClick={handleAction} className="modal-submit-button">
-              <p className="capitalize">{value}</p>
+              <p className="capitalize">{label}</p>
               {isLoading && (
                 <Image
                   src="/assets/icons/loader.svg"

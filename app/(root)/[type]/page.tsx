@@ -25,7 +25,7 @@ const Page = async ({ searchParams, params }: SearchParamProps) => {
           </p>
 
           <div className="sort-container">
-            <p className="body-1 hidden text-light-200 sm:block">Sort by:</p>
+            <p className="body-1 hidden text-light-200 sm:block">Ordenar por:</p>
 
             <Sort />
           </div>
@@ -40,7 +40,7 @@ const Page = async ({ searchParams, params }: SearchParamProps) => {
           ))}
         </section>
       ) : (
-        <p className="empty-list">No files uploaded</p>
+        <p className="empty-list">Sem arquivos enviados</p>
       )}
     </div>
   );

@@ -221,13 +221,13 @@ export const getUsageSummary = (totalSpace: any) => {
 
 export const getFileTypesParams = (type: string) => {
   switch (type) {
-    case "documents":
+    case "Documentos":
       return ["document"];
-    case "images":
+    case "Imagens":
       return ["image"];
-    case "media":
+    case "Midia":
       return ["video", "audio"];
-    case "others":
+    case "Outros":
       return ["other"];
     default:
       return ["document"];

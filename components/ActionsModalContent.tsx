@@ -29,10 +29,10 @@ export const FileDetails = ({ file }: { file: Models.Document }) => {
     <>
       <ImageThumbnail file={file} />
       <div className="space-y-4 px-2 pt-2">
-        <DetailRow label="Format:" value={file.extension} />
-        <DetailRow label="Size:" value={convertFileSize(file.size)} />
-        <DetailRow label="Owner:" value={file.owner.fullName} />
-        <DetailRow label="Last edit:" value={formatDateTime(file.$updatedAt)} />
+        <DetailRow label="Formato:" value={file.extension} />
+        <DetailRow label="Tamanho:" value={convertFileSize(file.size)} />
+        <DetailRow label="Proprietário:" value={file.owner.fullName} />
+        <DetailRow label="Última edição:" value={formatDateTime(file.$updatedAt)} />
       </div>
     </>
   );

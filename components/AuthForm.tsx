@@ -72,7 +72,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="auth-form">
           <h1 className="form-title">
-            {type === "sign-in" ? "Sign In" : "Sign Up"}
+            {type === "sign-in" ? "Entrar" : "Cadastrar"}
           </h1>
           {type === "sign-up" && (
             <FormField
@@ -125,7 +125,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
             className="form-submit-button"
             disabled={isLoading}
           >
-            {type === "sign-in" ? "Sign In" : "Sign Up"}
+            {type === "sign-in" ? "Entrar" : "Cadastrar"}
 
             {isLoading && (
               <Image
@@ -151,7 +151,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
               className="ml-1 font-medium text-brand"
             >
               {" "}
-              {type === "sign-in" ? "Sign Up" : "Sign In"}
+              {type === "sign-in" ? "Cadastrar" : "Entrar"}
             </Link>
           </div>
         </form>

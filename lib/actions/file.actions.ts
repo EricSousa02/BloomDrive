@@ -234,3 +234,5 @@ export async function getTotalSpaceUsed() {
     handleError(error, "Erro ao calcular espaço total utilizado");
   }
 }
+
+
