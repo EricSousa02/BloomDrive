@@ -93,17 +93,17 @@ export const formatDateTime = (isoString: string | null | undefined) => {
   const day = date.getDate();
   const monthNames = [
     "Jan",
-    "Feb",
+    "Fev",
     "Mar",
-    "Apr",
-    "May",
+    "Abr",
+    "Mai",
     "Jun",
     "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
+    "Ago",
+    "Set",
+    "Out",
     "Nov",
-    "Dec",
+    "Dez",
   ];
   const month = monthNames[date.getMonth()];
 
@@ -186,21 +186,21 @@ export const constructDownloadUrl = (bucketFileId: string) => {
 export const getUsageSummary = (totalSpace: any) => {
   return [
     {
-      title: "Documents",
+      title: "Documentos",
       size: totalSpace.document.size,
       latestDate: totalSpace.document.latestDate,
       icon: "/assets/icons/file-document-light.svg",
       url: "/documents",
     },
     {
-      title: "Images",
+      title: "Imagens",
       size: totalSpace.image.size,
       latestDate: totalSpace.image.latestDate,
       icon: "/assets/icons/file-image-light.svg",
       url: "/images",
     },
     {
-      title: "Media",
+      title: "Mídia",
       size: totalSpace.video.size + totalSpace.audio.size,
       latestDate:
         totalSpace.video.latestDate > totalSpace.audio.latestDate
@@ -210,7 +210,7 @@ export const getUsageSummary = (totalSpace: any) => {
       url: "/media",
     },
     {
-      title: "Others",
+      title: "Outros",
       size: totalSpace.other.size,
       latestDate: totalSpace.other.latestDate,
       icon: "/assets/icons/file-other-light.svg",

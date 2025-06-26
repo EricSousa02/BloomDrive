@@ -51,13 +51,13 @@ export const uploadFile = async ({
       )
       .catch(async (error: unknown) => {
         await storage.deleteFile(appwriteConfig.bucketId, bucketFile.$id);
-        handleError(error, "Failed to create file document");
+        handleError(error, "Falha ao criar documento de arquivo");
       });
 
     revalidatePath(path);
     return parseStringify(newFile);
   } catch (error) {
-    handleError(error, "Failed to upload file");
+    handleError(error, "Falha ao fazer upload do arquivo");
   }
 };
 
@@ -101,7 +101,7 @@ export const getFiles = async ({
   try {
     const currentUser = await getCurrentUser();
 
-    if (!currentUser) throw new Error("User not found");
+    if (!currentUser) throw new Error("Usuário não encontrado");
 
     const queries = createQueries(currentUser, types, searchText, sort, limit);
 
@@ -114,7 +114,7 @@ export const getFiles = async ({
     console.log({ files });
     return parseStringify(files);
   } catch (error) {
-    handleError(error, "Failed to get files");
+    handleError(error, "Falha ao buscar arquivos");
   }
 };
 
@@ -140,7 +140,7 @@ export const renameFile = async ({
     revalidatePath(path);
     return parseStringify(updatedFile);
   } catch (error) {
-    handleError(error, "Failed to rename file");
+    handleError(error, "Falha ao renomear arquivo");
   }
 };
 
@@ -164,7 +164,7 @@ export const updateFileUsers = async ({
     revalidatePath(path);
     return parseStringify(updatedFile);
   } catch (error) {
-    handleError(error, "Failed to rename file");
+    handleError(error, "Falha ao atualizar usuários do arquivo");
   }
 };
 
@@ -189,7 +189,7 @@ export const deleteFile = async ({
     revalidatePath(path);
     return parseStringify({ status: "success" });
   } catch (error) {
-    handleError(error, "Failed to rename file");
+    handleError(error, "Falha ao deletar arquivo");
   }
 };
 
@@ -198,7 +198,7 @@ export async function getTotalSpaceUsed() {
   try {
     const { databases } = await createSessionClient();
     const currentUser = await getCurrentUser();
-    if (!currentUser) throw new Error("User is not authenticated.");
+    if (!currentUser) throw new Error("Usuário não autenticado.");
 
     const files = await databases.listDocuments(
       appwriteConfig.databaseId,
@@ -231,6 +231,6 @@ export async function getTotalSpaceUsed() {
 
     return parseStringify(totalSpace);
   } catch (error) {
-    handleError(error, "Error calculating total space used:, ");
+    handleError(error, "Erro ao calcular espaço total utilizado");
   }
 }

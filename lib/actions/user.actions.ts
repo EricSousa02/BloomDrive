@@ -33,7 +33,7 @@ export const sendEmailOTP = async ({ email }: { email: string }) => {
 
     return session.userId;
   } catch (error) {
-    handleError(error, "Failed to send email OTP");
+    handleError(error, "Falha ao enviar OTP");
   }
 };
 
@@ -47,7 +47,7 @@ export const createAccount = async ({
   const existingUser = await getUserByEmail(email);
 
   const accountId = await sendEmailOTP({ email });
-  if (!accountId) throw new Error("Failed to send an OTP");
+  if (!accountId) throw new Error("Falha ao enviar um OTP");
 
   if (!existingUser) {
     const { databases } = await createAdminClient();
@@ -89,7 +89,7 @@ export const verifySecret = async ({
 
     return parseStringify({ sessionId: session.$id });
   } catch (error) {
-    handleError(error, "Failed to verify OTP");
+    handleError(error, "Falha ao verificar OTP");
   }
 };
 
@@ -120,7 +120,7 @@ export const signOutUser = async () => {
     await account.deleteSession("current");
     (await cookies()).delete("appwrite-session");
   } catch (error) {
-    handleError(error, "Failed to sign out user");
+    handleError(error, "Falha ao sair do usuário");
   } finally {
     redirect("/sign-in");
   }
@@ -136,8 +136,8 @@ export const signInUser = async ({ email }: { email: string }) => {
       return parseStringify({ accountId: existingUser.accountId });
     }
 
-    return parseStringify({ accountId: null, error: "User not found" });
+    return parseStringify({ accountId: null, error: "Usuário não encontrado" });
   } catch (error) {
-    handleError(error, "Failed to sign in user");
+    handleError(error, "Falha ao entrar no usuário");
   }
 };

@@ -61,7 +61,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
 
       setAccountId(user.accountId);
     } catch {
-      setErrorMessage("Failed to create account. Please try again.");
+      setErrorMessage("Falha ao realizar a operação. Tente novamente.");
     } finally {
       setIsLoading(false);
     }
@@ -81,11 +81,11 @@ const AuthForm = ({ type }: { type: FormType }) => {
               render={({ field }) => (
                 <FormItem>
                   <div className="shad-form-item">
-                    <FormLabel className="shad-form-label">Full Name</FormLabel>
+                    <FormLabel className="shad-form-label">Nome completo</FormLabel>
 
                     <FormControl>
                       <Input
-                        placeholder="Enter your full name"
+                        placeholder="Digite seu nome completo"
                         className="shad-input"
                         {...field}
                       />
@@ -108,7 +108,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
 
                   <FormControl>
                     <Input
-                      placeholder="Enter your email"
+                      placeholder="Digite seu e-mail"
                       className="shad-input"
                       {...field}
                     />
@@ -143,8 +143,8 @@ const AuthForm = ({ type }: { type: FormType }) => {
           <div className="body-2 flex justify-center">
             <p className="text-light-100">
               {type === "sign-in"
-                ? "Don't have an account?"
-                : "Already have an account?"}
+                ? "Não tem uma conta?"
+                : "Já tem uma conta?"}
             </p>
             <Link
               href={type === "sign-in" ? "/sign-up" : "/sign-in"}
