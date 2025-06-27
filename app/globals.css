@@ -8,7 +8,7 @@
   }
 
   body {
-    @apply bg-white text-dark-200 min-h-screen;
+    @apply bg-white text-dark-200 min-h-screen antialiased;
   }
 
   /* Remove scrollbar */

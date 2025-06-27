@@ -38,11 +38,11 @@ const MobileNavigation = ({
   return (
     <header className="mobile-header">
       <Image
-        src="/assets/icons/logo-full-brand.svg"
+        src="/assets/images/bloomdriveicon.png"
         alt="logo"
-        width={120}
-        height={52}
-        className="h-auto"
+        width={65}
+        height={70}
+        className="h-auto p-1"
       />
 
       <Sheet open={open} onOpenChange={setOpen}>
