@@ -115,9 +115,22 @@ export const verifySecret = async ({
 
 export const getCurrentUser = async () => {
   try {
+    console.log("🔍 getCurrentUser: Iniciando verificação...");
+    
+    // Verifica se há cookie de sessão
+    const sessionCookie = (await cookies()).get("bloom-drive-session");
+    if (!sessionCookie || !sessionCookie.value) {
+      console.log("❌ getCurrentUser: Sem cookie de sessão");
+      return null;
+    }
+    
+    console.log("🍪 getCurrentUser: Cookie encontrado");
+    
     const { databases, account } = await createSessionClient();
+    console.log("🔗 getCurrentUser: Cliente de sessão criado");
 
     const result = await account.get();
+    console.log("👤 getCurrentUser: Dados da conta obtidos:", result.$id);
 
     const user = await databases.listDocuments(
       appwriteConfig.databaseId,
@@ -125,23 +138,50 @@ export const getCurrentUser = async () => {
       [Query.equal("accountId", result.$id)],
     );
 
-    if (user.total <= 0) return null;
+    if (user.total <= 0) {
+      console.log("❌ getCurrentUser: Usuário não encontrado no banco");
+      return null;
+    }
 
+    console.log("✅ getCurrentUser: Usuário encontrado:", user.documents[0].email);
     return parseStringify(user.documents[0]);
   } catch (error) {
+    console.log("⚠️ getCurrentUser: Erro ao obter usuário:", error);
     return null;
   }
 };
 
 // Função para verificar se há usuário ativo e redirecionar
 export const checkUserAndRedirect = async () => {
-  const currentUser = await getCurrentUser();
-  
-  if (currentUser) {
-    redirect("/");
+  try {
+    console.log("🔍 Verificando se usuário já está autenticado...");
+    
+    // Primeiro verifica se há cookie de sessão
+    const sessionCookie = (await cookies()).get("bloom-drive-session");
+    
+    if (!sessionCookie || !sessionCookie.value) {
+      console.log("❌ Sem cookie de sessão - usuário não autenticado");
+      return null;
+    }
+    
+    console.log("🍪 Cookie de sessão encontrado");
+    
+    // Tenta obter o usuário atual
+    const currentUser = await getCurrentUser();
+    
+    if (currentUser) {
+      console.log("✅ Usuário autenticado encontrado - redirecionando para /");
+      redirect("/");
+    } else {
+      console.log("❌ Não foi possível obter dados do usuário");
+    }
+    
+    return currentUser;
+  } catch (error) {
+    console.log("⚠️ Erro ao verificar autenticação:", error);
+    // Se houver erro, assume que não está autenticado
+    return null;
   }
-  
-  return currentUser;
 };
 
 export const signOutUser = async () => {
