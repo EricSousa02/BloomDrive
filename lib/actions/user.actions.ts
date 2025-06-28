@@ -28,12 +28,12 @@ const simpleRetry = async <T>(
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       return await operation();
-    } catch (error) {
+    } catch {
       if (attempt === maxRetries) {
-        return null; // Retorna null na última tentativa em vez de lançar erro
+        return null;
       }
       // Aguarda um pouco antes de tentar novamente
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 500));
     }
   }
   return null;
@@ -114,21 +114,41 @@ export const verifySecret = async ({
 };
 
 export const getCurrentUser = async () => {
-  return await simpleRetry(async () => {
+  try {
     const { databases, account } = await createSessionClient();
 
     const result = await account.get();
 
-    const user = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.usersCollectionId,
-      [Query.equal("accountId", result.$id)],
-    );
+    // Se chegou até aqui, a sessão é válida, agora tenta buscar dados do usuário
+    const userData = await simpleRetry(async () => {
+      const user = await databases.listDocuments(
+        appwriteConfig.databaseId,
+        appwriteConfig.usersCollectionId,
+        [Query.equal("accountId", result.$id)],
+      );
 
-    if (user.total <= 0) return null;
+      if (user.total <= 0) return null;
+      return parseStringify(user.documents[0]);
+    });
 
-    return parseStringify(user.documents[0]);
-  });
+    // Se conseguiu os dados do banco, retorna
+    if (userData) {
+      return userData;
+    }
+
+    // Se não conseguiu dados do banco mas tem sessão válida, retorna dados básicos
+    return {
+      $id: result.$id,
+      accountId: result.$id,
+      email: result.email,
+      fullName: result.name || "Usuário",
+      avatar: avatarPlaceholderUrl
+    };
+
+  } catch (error) {
+    // Se não tem sessão válida, retorna null
+    return null;
+  }
 };
 
 export const signOutUser = async () => {
@@ -145,7 +165,7 @@ export const signOutUser = async () => {
 };
 
 export const signInUser = async ({ email }: { email: string }) => {
-  const result = await simpleRetry(async () => {
+  try {
     const existingUser = await getUserByEmail(email);
 
     // User exists, send OTP
@@ -155,7 +175,7 @@ export const signInUser = async ({ email }: { email: string }) => {
     }
 
     return parseStringify({ accountId: null, error: "Usuário não encontrado" });
-  });
-
-  return result || parseStringify({ accountId: null, error: "Erro no servidor" });
+  } catch {
+    return parseStringify({ accountId: null, error: "Erro no servidor" });
+  }
 };
