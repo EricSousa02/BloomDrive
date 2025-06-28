@@ -20,6 +20,25 @@ const getUserByEmail = async (email: string) => {
   return result.total > 0 ? result.documents[0] : null;
 };
 
+// Função simples de retry sem mensagens complexas de erro
+const simpleRetry = async <T>(
+  operation: () => Promise<T>,
+  maxRetries: number = 2
+): Promise<T | null> => {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      if (attempt === maxRetries) {
+        return null; // Retorna null na última tentativa em vez de lançar erro
+      }
+      // Aguarda um pouco antes de tentar novamente
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+  return null;
+};
+
 const handleError = (error: unknown, message: string) => {
   console.log(error, message);
   throw error;
@@ -95,7 +114,7 @@ export const verifySecret = async ({
 };
 
 export const getCurrentUser = async () => {
-  try {
+  return await simpleRetry(async () => {
     const { databases, account } = await createSessionClient();
 
     const result = await account.get();
@@ -109,10 +128,7 @@ export const getCurrentUser = async () => {
     if (user.total <= 0) return null;
 
     return parseStringify(user.documents[0]);
-  } catch (error) {
-    console.log("Erro ao obter usuário atual:", error);
-    return null;
-  }
+  });
 };
 
 export const signOutUser = async () => {
@@ -129,7 +145,7 @@ export const signOutUser = async () => {
 };
 
 export const signInUser = async ({ email }: { email: string }) => {
-  try {
+  const result = await simpleRetry(async () => {
     const existingUser = await getUserByEmail(email);
 
     // User exists, send OTP
@@ -139,8 +155,7 @@ export const signInUser = async ({ email }: { email: string }) => {
     }
 
     return parseStringify({ accountId: null, error: "Usuário não encontrado" });
-  } catch (error) {
-    console.log("Erro ao fazer login:", error);
-    return parseStringify({ accountId: null, error: "Erro no servidor" });
-  }
+  });
+
+  return result || parseStringify({ accountId: null, error: "Erro no servidor" });
 };
