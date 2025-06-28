@@ -24,10 +24,37 @@ type FormType = "sign-in" | "sign-up";
 
 const authFormSchema = (formType: FormType) => {
   return z.object({
-    email: z.string().email(),
+    email: z
+      .string({ required_error: "E-mail é obrigatório" })
+      .min(1, "E-mail é obrigatório")
+      .email("Digite um e-mail válido")
+      .max(100, "E-mail deve ter no máximo 100 caracteres")
+      .refine(
+        (email) => !email.includes(" "),
+        "E-mail não pode conter espaços"
+      )
+      .refine(
+        (email) => email.toLowerCase() === email,
+        "E-mail deve estar em letras minúsculas"
+      ),
     fullName:
       formType === "sign-up"
-        ? z.string().min(2).max(50)
+        ? z
+            .string({ required_error: "Nome é obrigatório" })
+            .min(2, "Nome deve ter pelo menos 2 caracteres")
+            .max(50, "Nome deve ter no máximo 50 caracteres")
+            .refine(
+              (name) => name.trim().length >= 2,
+              "Nome não pode conter apenas espaços"
+            )
+            .refine(
+              (name) => /^[a-zA-ZÀ-ÿ\s]+$/.test(name),
+              "Nome deve conter apenas letras e espaços"
+            )
+            .refine(
+              (name) => !name.includes("  "),
+              "Nome não pode ter espaços duplos"
+            )
         : z.string().optional(),
   });
 };
@@ -51,17 +78,46 @@ const AuthForm = ({ type }: { type: FormType }) => {
     setErrorMessage("");
 
     try {
+      // Validação adicional antes do envio
+      const trimmedValues = {
+        email: values.email.trim().toLowerCase(),
+        fullName: values.fullName?.trim().replace(/\s+/g, " "), // Remove espaços extras
+      };
+
+      // Revalidação com Zod após limpeza
+      const validationResult = formSchema.safeParse(trimmedValues);
+      
+      if (!validationResult.success) {
+        const firstError = validationResult.error.errors[0];
+        setErrorMessage(firstError.message);
+        return;
+      }
+
       const user =
         type === "sign-up"
           ? await createAccount({
-              fullName: values.fullName || "",
-              email: values.email,
+              fullName: trimmedValues.fullName || "",
+              email: trimmedValues.email,
             })
-          : await signInUser({ email: values.email });
+          : await signInUser({ email: trimmedValues.email });
 
-      setAccountId(user.accountId);
-    } catch {
-      setErrorMessage("Falha ao realizar a operação. Tente novamente.");
+      if (user?.error) {
+        setErrorMessage(user.error);
+        return;
+      }
+
+      if (user?.accountId) {
+        setAccountId(user.accountId);
+      } else {
+        setErrorMessage("Falha ao processar solicitação. Tente novamente.");
+      }
+    } catch (error) {
+      console.error("Erro no formulário:", error);
+      if (error instanceof z.ZodError) {
+        setErrorMessage(error.errors[0].message);
+      } else {
+        setErrorMessage("Falha ao realizar a operação. Verifique sua conexão e tente novamente.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -81,13 +137,23 @@ const AuthForm = ({ type }: { type: FormType }) => {
               render={({ field }) => (
                 <FormItem>
                   <div className="shad-form-item">
-                    <FormLabel className="shad-form-label">Nome completo</FormLabel>
+                    <FormLabel className="shad-form-label">Nome</FormLabel>
 
                     <FormControl>
                       <Input
-                        placeholder="Digite seu nome completo"
+                        placeholder="Digite seu nome (ex: João)"
                         className="shad-input"
                         {...field}
+                        onChange={(e) => {
+                          // Remove caracteres especiais e números em tempo real
+                          const cleanValue = e.target.value.replace(/[^a-zA-ZÀ-ÿ\s]/g, "");
+                          field.onChange(cleanValue);
+                        }}
+                        onBlur={(e) => {
+                          // Limpa espaços extras ao sair do campo
+                          const trimmedValue = e.target.value.trim().replace(/\s+/g, " ");
+                          field.onChange(trimmedValue);
+                        }}
                       />
                     </FormControl>
                   </div>
@@ -108,9 +174,16 @@ const AuthForm = ({ type }: { type: FormType }) => {
 
                   <FormControl>
                     <Input
-                      placeholder="Digite seu e-mail"
+                      placeholder="Digite seu e-mail (ex: usuario@exemplo.com)"
                       className="shad-input"
+                      type="email"
+                      autoComplete="email"
                       {...field}
+                      onChange={(e) => {
+                        // Remove espaços e converte para minúscula em tempo real
+                        const cleanValue = e.target.value.replace(/\s/g, "").toLowerCase();
+                        field.onChange(cleanValue);
+                      }}
                     />
                   </FormControl>
                 </div>
@@ -123,7 +196,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
           <Button
             type="submit"
             className="form-submit-button"
-            disabled={isLoading}
+            disabled={isLoading || !form.formState.isValid}
           >
             {type === "sign-in" ? "Entrar" : "Cadastrar"}
 
@@ -138,7 +211,18 @@ const AuthForm = ({ type }: { type: FormType }) => {
             )}
           </Button>
 
-          {errorMessage && <p className="error-message">*{errorMessage}</p>}
+          {errorMessage && (
+            <div className="error-message flex items-center gap-2">
+              {errorMessage}
+            </div>
+          )}
+
+          {/* Indicador de validade do formulário */}
+          {Object.keys(form.formState.errors).length > 0 && (
+            <div className="caption text-red-500 text-center">
+              Por favor, corrija os erros acima para continuar
+            </div>
+          )}
 
           <div className="body-2 flex justify-center">
             <p className="text-light-100">
