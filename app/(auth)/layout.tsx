@@ -9,7 +9,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <Image
             src="/assets/images/bloomdrive.png"
             alt="logo"
-            width={320}
+            width={300}
             height={82}
             className="h-auto"
           />

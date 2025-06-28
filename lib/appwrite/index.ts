@@ -9,7 +9,7 @@ export const createSessionClient = async () => {
     .setEndpoint(appwriteConfig.endpointUrl)
     .setProject(appwriteConfig.projectId);
 
-  const session = (await cookies()).get("appwrite-session");
+  const session = (await cookies()).get("bloom-drive-session");
 
   if (!session || !session.value) throw new Error("Sem sessão ativa");
 

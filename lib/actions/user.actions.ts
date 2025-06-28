@@ -80,11 +80,12 @@ export const verifySecret = async ({
 
     const session = await account.createSession(accountId, password);
 
-    (await cookies()).set("appwrite-session", session.secret, {
+    (await cookies()).set("bloom-drive-session", session.secret, {
       path: "/",
       httpOnly: true,
       sameSite: "strict",
       secure: true,
+      maxAge: 60 * 60 * 24 * 30, // 30 dias em segundos | esse é o tempo que o cookie será mantido
     });
 
     return parseStringify({ sessionId: session.$id });
@@ -118,7 +119,7 @@ export const signOutUser = async () => {
 
   try {
     await account.deleteSession("current");
-    (await cookies()).delete("appwrite-session");
+    (await cookies()).delete("bloom-drive-session");
   } catch (error) {
     handleError(error, "Falha ao sair do usuário");
   } finally {

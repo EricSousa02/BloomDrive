@@ -20,9 +20,18 @@ const Page = async ({ searchParams, params }: SearchParamProps) => {
         <h1 className="h1 capitalize">{type}</h1>
 
         <div className="total-size-section">
-          <p className="body-1">
-            Total: <span className="h5">0 MB</span>
-          </p>
+            <p className="body-1">
+            Total:{" "}
+            <span className="h5">
+              {(
+              files.documents.reduce(
+                (acc: number, file: Models.Document) => acc + (file.size || 0),
+                0
+              ) / (1024 * 1024)
+              ).toFixed(2)}{" "}
+              MB
+            </span>
+            </p>
 
           <div className="sort-container">
             <p className="body-1 hidden text-light-200 sm:block">Ordenar por:</p>
