@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
-// se eu precisar de dark mode, posso descomentar a linha abaixo	
+// se precisar de modo escuro, posso descomentar a linha abaixo	
 //   darkMode: ["class"],
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",

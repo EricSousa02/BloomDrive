@@ -11,21 +11,21 @@ export const convertFileToUrl = (file: File) => URL.createObjectURL(file);
 
 export const convertFileSize = (sizeInBytes: number, digits?: number) => {
   if (sizeInBytes < 1024) {
-    return sizeInBytes + " Bytes"; // Less than 1 KB, show in Bytes
+    return sizeInBytes + " Bytes"; // Menos de 1 KB, mostra em Bytes
   } else if (sizeInBytes < 1024 * 1024) {
     const sizeInKB = sizeInBytes / 1024;
-    return sizeInKB.toFixed(digits || 1) + " KB"; // Less than 1 MB, show in KB
+    return sizeInKB.toFixed(digits || 1) + " KB"; // Menos de 1 MB, mostra em KB
   } else if (sizeInBytes < 1024 * 1024 * 1024) {
     const sizeInMB = sizeInBytes / (1024 * 1024);
-    return sizeInMB.toFixed(digits || 1) + " MB"; // Less than 1 GB, show in MB
+    return sizeInMB.toFixed(digits || 1) + " MB"; // Menos de 1 GB, mostra em MB
   } else {
     const sizeInGB = sizeInBytes / (1024 * 1024 * 1024);
-    return sizeInGB.toFixed(digits || 1) + " GB"; // 1 GB or more, show in GB
+    return sizeInGB.toFixed(digits || 1) + " GB"; // 1 GB ou mais, mostra em GB
   }
 };
 
 export const calculatePercentage = (sizeInBytes: number) => {
-  const totalSizeInBytes = 2 * 1024 * 1024 * 1024; // 2GB in bytes
+  const totalSizeInBytes = 2 * 1024 * 1024 * 1024; // 2GB em bytes
   const percentage = (sizeInBytes / totalSizeInBytes) * 100;
   return Number(percentage.toFixed(2));
 };
@@ -80,15 +80,15 @@ export const formatDateTime = (isoString: string | null | undefined) => {
 
   const date = new Date(isoString);
 
-  // Get hours and adjust for 12-hour format
+  // Obtém horas e ajusta para formato 12 horas
   let hours = date.getHours();
   const minutes = date.getMinutes();
   const period = hours >= 12 ? "pm" : "am";
 
-  // Convert hours to 12-hour format
+  // Converte horas para formato 12 horas
   hours = hours % 12 || 12;
 
-  // Format the time and date parts
+  // Formata as partes de tempo e data
   const time = `${hours}:${minutes.toString().padStart(2, "0")}${period}`;
   const day = date.getDate();
   const monthNames = [
@@ -115,7 +115,7 @@ export const getFileIcon = (
   type: FileType | string,
 ) => {
   switch (extension) {
-    // Document
+    // Documento
     case "pdf":
       return "/assets/icons/file-pdf.svg";
     case "doc":
@@ -129,10 +129,10 @@ export const getFileIcon = (
     case "xls":
     case "xlsx":
       return "/assets/icons/file-document.svg";
-    // Image
+    // Imagem
     case "svg":
       return "/assets/icons/file-image.svg";
-    // Video
+    // Vídeo
     case "mkv":
     case "mov":
     case "avi":
@@ -143,7 +143,7 @@ export const getFileIcon = (
     case "m4v":
     case "3gp":
       return "/assets/icons/file-video.svg";
-    // Audio
+    // Áudio
     case "mp3":
     case "mpeg":
     case "wav":
@@ -172,8 +172,8 @@ export const getFileIcon = (
   }
 };
 
-// APPWRITE URL UTILS
-// Construct appwrite file URL - https://appwrite.io/docs/apis/rest#images
+// UTILITÁRIOS DE URL DO APPWRITE
+// Constrói URL de arquivo do appwrite - https://appwrite.io/docs/apis/rest#images
 export const constructFileUrl = (bucketFileId: string) => {
   return `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${process.env.NEXT_PUBLIC_APPWRITE_BUCKET}/files/${bucketFileId}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT}`;
 };
@@ -182,7 +182,7 @@ export const constructDownloadUrl = (bucketFileId: string) => {
   return `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${process.env.NEXT_PUBLIC_APPWRITE_BUCKET}/files/${bucketFileId}/download?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT}`;
 };
 
-// DASHBOARD UTILS
+// UTILITÁRIOS DO DASHBOARD
 export const getUsageSummary = (totalSpace: any) => {
   return [
     {

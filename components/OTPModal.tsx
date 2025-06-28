@@ -91,7 +91,7 @@ const OtpModal = ({
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
     setError(""); // Limpa erros ao colar
-    const pastedData = e.clipboardData.getData('text').replace(/\D/g, ''); // Remove non-digits
+    const pastedData = e.clipboardData.getData('text').replace(/\D/g, ''); // Remove caracteres não numéricos
     
     if (pastedData.length === 6) {
       setPassword(pastedData);

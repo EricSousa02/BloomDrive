@@ -104,7 +104,7 @@ export const verifySecret = async ({
       httpOnly: true,
       sameSite: "strict",
       secure: true,
-      maxAge: 60 * 60 * 24 * 30, // 30 days in seconds | token expiration
+      maxAge: 60 * 60 * 24 * 30, // 30 dias em segundos | expiração do token
     });
 
     return parseStringify({ sessionId: session.$id });
@@ -161,7 +161,7 @@ export const signInUser = async ({ email }: { email: string }) => {
   try {
     const existingUser = await getUserByEmail(email);
 
-    // User exists, send OTP
+    // Usuário existe, envia OTP
     if (existingUser) {
       await sendEmailOTP({ email });
       return parseStringify({ accountId: existingUser.accountId });

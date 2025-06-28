@@ -27,8 +27,8 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
   const simulateProgress = (fileName: string, fileSize: number): Promise<void> => {
     return new Promise((resolve) => {
       let progress = 0;
-      const increment = Math.random() * 15 + 5; // 5-20% increments
-      const baseTime = Math.min(fileSize / 1000000 * 100, 300); // Base time based on file size
+      const increment = Math.random() * 15 + 5; // Incrementos de 5-20%
+      const baseTime = Math.min(fileSize / 1000000 * 100, 300); // Tempo base baseado no tamanho do arquivo
       
       const interval = setInterval(() => {
         progress += increment;
@@ -40,7 +40,7 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
         } else {
           setUploadProgress(prev => ({ ...prev, [fileName]: progress }));
         }
-      }, baseTime + Math.random() * 200); // Varying interval for realistic feel
+      }, baseTime + Math.random() * 200); // Intervalo variável para sensação realista
     });
   };
 
@@ -65,13 +65,13 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
           });
         }
 
-        // Initialize progress for this file
+        // Inicializa o progresso para este arquivo
         setUploadProgress(prev => ({ ...prev, [file.name]: 0 }));
 
-        // Start progress simulation
+        // Inicia a simulação de progresso
         const progressPromise = simulateProgress(file.name, file.size);
 
-        // Start actual upload
+        // Inicia o upload real
         const uploadPromise = uploadFile({ file, ownerId, accountId, path }).then(
           (uploadedFile) => {
             if (uploadedFile) {
@@ -87,7 +87,7 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
           },
         );
 
-        // Wait for both progress simulation and upload to complete
+        // Aguarda tanto a simulação de progresso quanto o upload completarem
         await Promise.all([progressPromise, uploadPromise]);
       });
 
