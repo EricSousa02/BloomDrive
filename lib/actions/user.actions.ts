@@ -20,59 +20,8 @@ const getUserByEmail = async (email: string) => {
   return result.total > 0 ? result.documents[0] : null;
 };
 
-// Utility function for retrying operations
-const retryOperation = async <T>(
-  operation: () => Promise<T>,
-  maxRetries: number = 3,
-  delay: number = 1000
-): Promise<T | null> => {
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      return await operation();
-    } catch (error) {
-      console.log(`Tentativa ${attempt} falhou:`, error);
-      
-      // Check if it's a server error that we should retry
-      if (error && typeof error === 'object' && 'code' in error) {
-        const appwriteError = error as { code: number };
-        
-        // Don't retry client errors (4xx), only server errors (5xx)
-        if (appwriteError.code < 500) {
-          throw error;
-        }
-        
-        // If it's the last attempt, don't wait
-        if (attempt === maxRetries) {
-          console.log("Máximo de tentativas atingido");
-          return null;
-        }
-        
-        // Wait before retrying (exponential backoff)
-        await new Promise(resolve => setTimeout(resolve, delay * attempt));
-      } else {
-        throw error;
-      }
-    }
-  }
-  
-  return null;
-};
-
 const handleError = (error: unknown, message: string) => {
   console.log(error, message);
-  
-  // Check if it's a network/server error
-  if (error && typeof error === 'object' && 'code' in error) {
-    const appwriteError = error as { code: number; message?: string };
-    
-    // Handle specific server errors
-    if (appwriteError.code >= 500) {
-      console.log("Erro do servidor detectado:", appwriteError.code);
-      // Don't throw on server errors, return gracefully
-      return null;
-    }
-  }
-  
   throw error;
 };
 
@@ -149,58 +98,20 @@ export const getCurrentUser = async () => {
   try {
     const { databases, account } = await createSessionClient();
 
-    // First try to get the account info
     const result = await account.get();
-    
-    // If we got here, the session is valid, now try to get user data with retry
-    const userData = await retryOperation(async () => {
-      const user = await databases.listDocuments(
-        appwriteConfig.databaseId,
-        appwriteConfig.usersCollectionId,
-        [Query.equal("accountId", result.$id)],
-      );
 
-      if (user.total <= 0) return null;
-      return parseStringify(user.documents[0]);
-    });
+    const user = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.usersCollectionId,
+      [Query.equal("accountId", result.$id)],
+    );
 
-    // If retry failed but session is valid, return basic user info
-    if (!userData && result) {
-      console.log("Usando dados básicos da sessão devido a problemas de servidor");
-      return {
-        $id: result.$id,
-        accountId: result.$id,
-        email: result.email,
-        fullName: result.name || "Usuário",
-        avatar: avatarPlaceholderUrl
-      };
-    }
+    if (user.total <= 0) return null;
 
-    return userData;
+    return parseStringify(user.documents[0]);
   } catch (error) {
     console.log("Erro ao obter usuário atual:", error);
-    
-    // If it's a session error (unauthorized), return null to redirect to login
-    if (error && typeof error === 'object' && 'code' in error) {
-      const appwriteError = error as { code: number };
-      if (appwriteError.code === 401 || appwriteError.code === 403) {
-        return null; // Invalid session, redirect to login
-      }
-    }
-    
-    // For other errors, don't force logout
-    throw error;
-  }
-};
-
-// Function to check if user has a valid session cookie
-export const hasValidSession = async (): Promise<boolean> => {
-  try {
-    const cookieStore = await cookies();
-    const sessionCookie = cookieStore.get("bloom-drive-session");
-    return !!sessionCookie?.value;
-  } catch {
-    return false;
+    return null;
   }
 };
 
@@ -218,7 +129,7 @@ export const signOutUser = async () => {
 };
 
 export const signInUser = async ({ email }: { email: string }) => {
-  return await retryOperation(async () => {
+  try {
     const existingUser = await getUserByEmail(email);
 
     // User exists, send OTP
@@ -228,5 +139,8 @@ export const signInUser = async ({ email }: { email: string }) => {
     }
 
     return parseStringify({ accountId: null, error: "Usuário não encontrado" });
-  }) || parseStringify({ accountId: null, error: "Serviço temporariamente indisponível" });
+  } catch (error) {
+    console.log("Erro ao fazer login:", error);
+    return parseStringify({ accountId: null, error: "Erro no servidor" });
+  }
 };
