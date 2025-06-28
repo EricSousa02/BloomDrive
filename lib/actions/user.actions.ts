@@ -119,36 +119,29 @@ export const getCurrentUser = async () => {
 
     const result = await account.get();
 
-    // Se chegou até aqui, a sessão é válida, agora tenta buscar dados do usuário
-    const userData = await simpleRetry(async () => {
-      const user = await databases.listDocuments(
-        appwriteConfig.databaseId,
-        appwriteConfig.usersCollectionId,
-        [Query.equal("accountId", result.$id)],
-      );
+    const user = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.usersCollectionId,
+      [Query.equal("accountId", result.$id)],
+    );
 
-      if (user.total <= 0) return null;
-      return parseStringify(user.documents[0]);
-    });
+    if (user.total <= 0) return null;
 
-    // Se conseguiu os dados do banco, retorna
-    if (userData) {
-      return userData;
-    }
-
-    // Se não conseguiu dados do banco mas tem sessão válida, retorna dados básicos
-    return {
-      $id: result.$id,
-      accountId: result.$id,
-      email: result.email,
-      fullName: result.name || "Usuário",
-      avatar: avatarPlaceholderUrl
-    };
-
+    return parseStringify(user.documents[0]);
   } catch (error) {
-    // Se não tem sessão válida, retorna null
     return null;
   }
+};
+
+// Função para verificar se há usuário ativo e redirecionar
+export const checkUserAndRedirect = async () => {
+  const currentUser = await getCurrentUser();
+  
+  if (currentUser) {
+    redirect("/");
+  }
+  
+  return currentUser;
 };
 
 export const signOutUser = async () => {
