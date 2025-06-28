@@ -22,6 +22,27 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
   const path = usePathname();
   const { toast } = useToast();
   const [files, setFiles] = useState<File[]>([]);
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
+
+  const simulateProgress = (fileName: string, fileSize: number): Promise<void> => {
+    return new Promise((resolve) => {
+      let progress = 0;
+      const increment = Math.random() * 15 + 5; // 5-20% increments
+      const baseTime = Math.min(fileSize / 1000000 * 100, 300); // Base time based on file size
+      
+      const interval = setInterval(() => {
+        progress += increment;
+        if (progress >= 100) {
+          progress = 100;
+          setUploadProgress(prev => ({ ...prev, [fileName]: progress }));
+          clearInterval(interval);
+          resolve();
+        } else {
+          setUploadProgress(prev => ({ ...prev, [fileName]: progress }));
+        }
+      }, baseTime + Math.random() * 200); // Varying interval for realistic feel
+    });
+  };
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
@@ -44,15 +65,30 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
           });
         }
 
-        return uploadFile({ file, ownerId, accountId, path }).then(
+        // Initialize progress for this file
+        setUploadProgress(prev => ({ ...prev, [file.name]: 0 }));
+
+        // Start progress simulation
+        const progressPromise = simulateProgress(file.name, file.size);
+
+        // Start actual upload
+        const uploadPromise = uploadFile({ file, ownerId, accountId, path }).then(
           (uploadedFile) => {
             if (uploadedFile) {
               setFiles((prevFiles) =>
                 prevFiles.filter((f) => f.name !== file.name),
               );
+              setUploadProgress(prev => {
+                const newProgress = { ...prev };
+                delete newProgress[file.name];
+                return newProgress;
+              });
             }
           },
         );
+
+        // Wait for both progress simulation and upload to complete
+        await Promise.all([progressPromise, uploadPromise]);
       });
 
       await Promise.all(uploadPromises);
@@ -103,12 +139,17 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
 
                   <div className="preview-item-name">
                     {file.name}
-                    <Image
-                      src="/assets/icons/file-loader.gif"
-                      width={80}
-                      height={26}
-                      alt="Loader"
-                    />
+                    <div className="mt-2 flex items-center gap-2">
+                      <div className="flex-1 h-1 rounded-full bg-black/20 relative overflow-hidden">
+                        <div 
+                          className="h-full rounded-full bg-brand transition-all duration-300 ease-out"
+                          style={{ width: `${uploadProgress[file.name] || 0}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-xs text-light-100 min-w-[40px] text-right">
+                        {Math.round(uploadProgress[file.name] || 0)}%
+                      </span>
+                    </div>
                   </div>
                 </div>
 

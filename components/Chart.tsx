@@ -67,10 +67,11 @@ export const Chart = ({ used = 0 }: { used: number }) => {
                           className="chart-total-percentage"
                         >
                           {used && calculatePercentage(used)
-                            ? calculatePercentage(used)
-                                .toString()
-                                .replace(/^0+/, "")
-                            : "0"}
+                            ? Number(calculatePercentage(used)).toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })
+                            : "0.00"}
                           %
                         </tspan>
                         <tspan
