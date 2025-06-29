@@ -12,6 +12,30 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "BloomDrive",
   description: "BloomDrive - A solução de armazenamento que você precisa.",
+  openGraph: {
+    title: "BloomDrive - Gerenciamento de Arquivos",
+    description: "A solução completa para armazenamento e gerenciamento de arquivos na nuvem.",
+    images: [
+      {
+        url: "/assets/images/vercel-cape.png",
+        width: 1200,
+        height: 630,
+        alt: "BloomDrive - Gerenciamento de Arquivos",
+      },
+    ],
+    locale: "pt_BR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "BloomDrive - Gerenciamento de Arquivos",
+    description: "A solução completa para armazenamento e gerenciamento de arquivos na nuvem.",
+    images: ["/assets/images/vercel-cape.png"],
+  },
+  icons: {
+    icon: "/assets/images/bloomdriveicon.png",
+    apple: "/assets/images/bloomdriveicon.png",
+  },
 };
 
 export default function RootLayout({
