@@ -10,7 +10,6 @@ export async function GET() {
       user: user || null
     });
   } catch (error) {
-    console.log("Erro na verificação de autenticação:", error);
     return NextResponse.json({
       isAuthenticated: false,
       user: null

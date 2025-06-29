@@ -19,13 +19,12 @@ const AuthChecker = ({ children }: { children: React.ReactNode }) => {
         if (response.ok) {
           const data = await response.json();
           if (data.isAuthenticated) {
-            console.log("✅ Usuário já autenticado - redirecionando para /");
             router.replace('/');
             return;
           }
         }
       } catch (error) {
-        console.log("⚠️ Erro ao verificar autenticação:", error);
+        // Erro silencioso - assume que não está autenticado
       } finally {
         setIsChecking(false);
       }
