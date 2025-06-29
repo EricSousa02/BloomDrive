@@ -20,25 +20,6 @@ const getUserByEmail = async (email: string) => {
   return result.total > 0 ? result.documents[0] : null;
 };
 
-// Função simples de retry sem mensagens complexas de erro
-const simpleRetry = async <T>(
-  operation: () => Promise<T>,
-  maxRetries: number = 2
-): Promise<T | null> => {
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      return await operation();
-    } catch {
-      if (attempt === maxRetries) {
-        return null;
-      }
-      // Aguarda um pouco antes de tentar novamente
-      await new Promise(resolve => setTimeout(resolve, 500));
-    }
-  }
-  return null;
-};
-
 const handleError = (error: unknown, message: string) => {
   console.log(error, message);
   throw error;
@@ -104,7 +85,7 @@ export const verifySecret = async ({
       httpOnly: true,
       sameSite: "strict",
       secure: true,
-      maxAge: 60 * 60 * 24 * 30, // 30 dias em segundos | expiração do token
+      maxAge: 60 * 60 * 24 * 30, // 30 dias em segundos | esse é o tempo que o cookie será mantido
     });
 
     return parseStringify({ sessionId: session.$id });
@@ -115,12 +96,6 @@ export const verifySecret = async ({
 
 export const getCurrentUser = async () => {
   try {
-    // Verifica se há cookie de sessão
-    const sessionCookie = (await cookies()).get("bloom-drive-session");
-    if (!sessionCookie || !sessionCookie.value) {
-      return null;
-    }
-    
     const { databases, account } = await createSessionClient();
 
     const result = await account.get();
@@ -131,37 +106,11 @@ export const getCurrentUser = async () => {
       [Query.equal("accountId", result.$id)],
     );
 
-    if (user.total <= 0) {
-      return null;
-    }
+    if (user.total <= 0) return null;
 
     return parseStringify(user.documents[0]);
   } catch (error) {
-    return null;
-  }
-};
-
-// Função para verificar se há usuário ativo e redirecionar
-export const checkUserAndRedirect = async () => {
-  try {
-    // Primeiro verifica se há cookie de sessão
-    const sessionCookie = (await cookies()).get("bloom-drive-session");
-    
-    if (!sessionCookie || !sessionCookie.value) {
-      return null;
-    }
-    
-    // Tenta obter o usuário atual
-    const currentUser = await getCurrentUser();
-    
-    if (currentUser) {
-      redirect("/");
-    }
-    
-    return currentUser;
-  } catch (error) {
-    // Se houver erro, assume que não está autenticado
-    return null;
+    console.log(error);
   }
 };
 
@@ -182,14 +131,14 @@ export const signInUser = async ({ email }: { email: string }) => {
   try {
     const existingUser = await getUserByEmail(email);
 
-    // Usuário existe, envia OTP
+    // User exists, send OTP
     if (existingUser) {
       await sendEmailOTP({ email });
       return parseStringify({ accountId: existingUser.accountId });
     }
 
     return parseStringify({ accountId: null, error: "Usuário não encontrado" });
-  } catch {
-    return parseStringify({ accountId: null, error: "Erro no servidor" });
+  } catch (error) {
+    handleError(error, "Falha ao entrar no usuário");
   }
 };

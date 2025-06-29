@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/store_it.iml" filepath="$PROJECT_DIR$/.idea/store_it.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/bloom_drive.iml" filepath="$PROJECT_DIR$/.idea/bloom_drive.iml" />
     </modules>
   </component>
 </project>
