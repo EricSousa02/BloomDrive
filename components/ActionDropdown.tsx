@@ -15,7 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Models } from "node-appwrite";
 import { actionsDropdownItems } from "@/constants";
@@ -27,6 +27,7 @@ import {
   deleteFile,
   renameFile,
   updateFileUsers,
+  leaveFileShare,
 } from "@/lib/actions/file.actions";
 import { usePathname } from "next/navigation";
 import { FileDetails, ShareInput } from "@/components/ActionsModalContent";
@@ -38,8 +39,56 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
   const [name, setName] = useState(file.name);
   const [isLoading, setIsLoading] = useState(false);
   const [emails, setEmails] = useState<string[]>([]);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [isUserLoaded, setIsUserLoaded] = useState(false);
 
   const path = usePathname();
+
+  // Busca o usuário atual ao montar o componente
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const response = await fetch('/api/check-auth', {
+          method: 'GET',
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.isAuthenticated && data.user) {
+            setCurrentUser(data.user);
+          }
+        }
+      } catch (error) {
+        console.error('Erro ao buscar usuário atual:', error);
+      } finally {
+        setIsUserLoaded(true);
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
+
+  // Verifica se o usuário atual é o dono do arquivo
+  const isOwner = currentUser && file.owner && currentUser.accountId === file.owner.accountId;
+
+  // Filtra as ações baseado nas permissões
+  const getAvailableActions = () => {
+    if (!isUserLoaded || !currentUser) return actionsDropdownItems;
+    
+    return actionsDropdownItems.filter(action => {
+      // Apenas o dono pode renomear e deletar
+      if (action.value === 'rename' || action.value === 'delete') {
+        return isOwner;
+      }
+      // Apenas quem não é dono pode sair do compartilhamento
+      if (action.value === 'leave') {
+        return !isOwner;
+      }
+      // Todos podem ver detalhes, compartilhar e baixar
+      return true;
+    });
+  };
 
   const closeAllModals = () => {
     setIsModalOpen(false);
@@ -51,6 +100,18 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
 
   const handleAction = async () => {
     if (!action) return;
+    
+    // Verificação adicional de segurança no cliente
+    if ((action.value === 'rename' || action.value === 'delete') && !isOwner) {
+      alert('Apenas o proprietário pode realizar esta ação.');
+      return;
+    }
+
+    if (action.value === 'leave' && isOwner) {
+      alert('O proprietário não pode sair do próprio compartilhamento.');
+      return;
+    }
+    
     setIsLoading(true);
     let success = false;
 
@@ -60,6 +121,7 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
       share: () => updateFileUsers({ fileId: file.$id, emails, path }),
       delete: () =>
         deleteFile({ fileId: file.$id, bucketFileId: file.bucketFileId, path }),
+      leave: () => leaveFileShare({ fileId: file.$id, path }),
     };
 
     success = await actions[action.value as keyof typeof actions]();
@@ -114,8 +176,18 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
               <span className="delete-file-name">{file.name}</span>?
             </p>
           )}
+          {value === "leave" && (
+            <p className="delete-confirmation">
+              Tem certeza de que deseja sair do compartilhamento do arquivo{` `}
+              <span className="delete-file-name">{file.name}</span>?
+              <br />
+              <span className="text-sm text-light-200 mt-2 block">
+                Você não terá mais acesso a este arquivo.
+              </span>
+            </p>
+          )}
         </DialogHeader>
-        {["rename", "delete", "share"].includes(value) && (
+        {["rename", "delete", "share", "leave"].includes(value) && (
           <DialogFooter className="flex flex-col gap-3 md:flex-row">
             <Button onClick={closeAllModals} className="modal-cancel-button">
               Cancelar
@@ -151,10 +223,25 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuLabel className="max-w-[200px] truncate">
-            {file.name}
+            <div className="flex flex-col">
+              <span>{file.name}</span>
+              {isUserLoaded && (
+                <>
+                  {isOwner ? (
+                    <span className="text-xs text-brand font-medium truncate">
+                      👑 Seu arquivo
+                    </span>
+                  ) : (
+                    <span className="text-xs text-gray-500 truncate">
+                      📤 Compartilhado por {file.owner.fullName}
+                    </span>
+                  )}
+                </>
+              )}
+            </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {actionsDropdownItems.map((actionItem) => (
+          {getAvailableActions().map((actionItem) => (
             <DropdownMenuItem
               key={actionItem.value}
               className="shad-dropdown-item"
@@ -162,7 +249,7 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
                 setAction(actionItem);
 
                 if (
-                  ["rename", "share", "delete", "details"].includes(
+                  ["rename", "share", "delete", "details", "leave"].includes(
                     actionItem.value,
                   )
                 ) {

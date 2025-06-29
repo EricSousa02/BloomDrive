@@ -7,7 +7,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Separator } from "@radix-ui/react-separator";
 import { navItems } from "@/constants";
@@ -34,6 +34,11 @@ const MobileNavigation = ({
 }: Props) => {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+
+  // Fecha a navegação mobile quando a rota muda
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   return (
     <header className="mobile-header">

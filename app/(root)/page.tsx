@@ -78,14 +78,16 @@ const Dashboard = async () => {
                 />
 
                 <div className="recent-file-details">
-                  <div className="flex flex-col gap-1">
-                    <p className="recent-file-name">{file.name}</p>
+                  <div className="flex flex-col gap-1 flex-1 min-w-0">
+                    <p className="recent-file-name truncate">{file.name}</p>
                     <FormattedDateTime
                       date={file.$createdAt}
                       className="caption"
                     />
                   </div>
-                  <ActionDropdown file={file} />
+                  <div className="flex-shrink-0">
+                    <ActionDropdown file={file} />
+                  </div>
                 </div>
               </Link>
             ))}

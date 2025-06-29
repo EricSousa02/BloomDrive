@@ -42,6 +42,11 @@ declare interface DeleteFileProps {
   path: string;
 }
 
+declare interface LeaveFileShareProps {
+  fileId: string;
+  path: string;
+}
+
 declare interface FileUploaderProps {
   ownerId: string;
   accountId: string;

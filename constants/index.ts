@@ -48,6 +48,11 @@ export const actionsDropdownItems = [
     value: "download",
   },
   {
+    label: "Sair do compartilhamento",
+    icon: "/assets/icons/delete.svg",
+    value: "leave",
+  },
+  {
     label: "Deletar",
     icon: "/assets/icons/delete.svg",
     value: "delete",
@@ -57,7 +62,7 @@ export const actionsDropdownItems = [
 export const sortTypes = [
   {
     label: "Data (mais recente)",
-    value: "$createdAt-desc",
+    value: "$updatedAt-desc",
   },
   {
     label: "Data (mais antiga)",

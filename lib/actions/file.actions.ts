@@ -111,7 +111,6 @@ export const getFiles = async ({
       queries,
     );
 
-    console.log({ files });
     return parseStringify(files);
   } catch (error) {
     handleError(error, "Falha ao buscar arquivos");
@@ -234,5 +233,47 @@ export async function getTotalSpaceUsed() {
     handleError(error, "Erro ao calcular espaço total utilizado");
   }
 }
+
+export const leaveFileShare = async ({
+  fileId,
+  path,
+}: LeaveFileShareProps) => {
+  const { databases } = await createAdminClient();
+
+  try {
+    const currentUser = await getCurrentUser();
+    if (!currentUser) throw new Error("Usuário não autenticado.");
+
+    // Busca o arquivo atual
+    const file = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.filesCollectionId,
+      fileId,
+    );
+
+    // Verifica se o usuário atual está na lista de usuários compartilhados
+    const currentUsers = Array.isArray(file.users) ? file.users : [];
+    const userEmails = currentUsers.map((user: any) => user.email);
+    
+    // Remove o email do usuário atual da lista
+    const updatedEmails = userEmails.filter((email: string) => email !== currentUser.email);
+
+    // Atualiza o arquivo removendo o usuário atual
+    const updatedFile = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.filesCollectionId,
+      fileId,
+      {
+        users: updatedEmails,
+      },
+    );
+
+    revalidatePath(path);
+    return parseStringify(updatedFile);
+  } catch (error) {
+    handleError(error, "Erro ao sair do compartilhamento do arquivo");
+    return false;
+  }
+};
 
 
