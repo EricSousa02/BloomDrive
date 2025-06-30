@@ -32,9 +32,8 @@
 
 ### 🌐 Links Úteis
 
-- **🔗 Demo Online**: [bloomdrive.vercel.app](https://bloomdrive.vercel.app)
-- **📚 Documentação**: [docs.bloomdrive.com](https://docs.bloomdrive.com)
-- **🐛 Reportar Bug**: [Issues do GitHub](https://github.com/user/bloomdrive/issues)
+- **🔗 Demo Online**: [bloomdrive.vercel.app](https://bloom-drive-delta.vercel.app/)
+- **🐛 Reportar Bug**: [Issues do GitHub](https://github.com/EricSousa02/BloomDrive/issues)
 
 ---
 
