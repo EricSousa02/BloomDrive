@@ -126,7 +126,14 @@ export const renameFile = async ({
   const { databases } = await createAdminClient();
 
   try {
-    const newName = `${name}.${extension}`;
+    // Remove a extensão do nome se ela já estiver presente (proteção adicional)
+    let cleanName = name.trim();
+    const extensionPattern = new RegExp(`\\.${extension}$`, 'i');
+    if (extensionPattern.test(cleanName)) {
+      cleanName = cleanName.replace(extensionPattern, '');
+    }
+    
+    const newName = `${cleanName}.${extension}`;
     const updatedFile = await databases.updateDocument(
       appwriteConfig.databaseId,
       appwriteConfig.filesCollectionId,

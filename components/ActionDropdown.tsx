@@ -33,16 +33,31 @@ import { usePathname } from "next/navigation";
 import { FileDetails, ShareInput } from "@/components/ActionsModalContent";
 
 const ActionDropdown = ({ file }: { file: Models.Document }) => {
+  // Função utilitária para extrair o nome base sem extensão
+  const getFileNameWithoutExtension = (fileName: string) => {
+    const nameParts = fileName.split('.');
+    if (nameParts.length > 1) {
+      nameParts.pop(); // Remove a última parte (extensão)
+      return nameParts.join('.');
+    }
+    return fileName;
+  };
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [action, setAction] = useState<ActionType | null>(null);
-  const [name, setName] = useState(file.name);
+  const [name, setName] = useState(() => getFileNameWithoutExtension(file.name));
   const [isLoading, setIsLoading] = useState(false);
   const [emails, setEmails] = useState<string[]>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isUserLoaded, setIsUserLoaded] = useState(false);
 
   const path = usePathname();
+
+  // Atualiza o nome quando o arquivo é alterado (após renomeação)
+  useEffect(() => {
+    setName(getFileNameWithoutExtension(file.name));
+  }, [file.name]);
 
   // Busca o usuário atual ao montar o componente
   useEffect(() => {
@@ -94,7 +109,8 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
     setIsModalOpen(false);
     setIsDropdownOpen(false);
     setAction(null);
-    setName(file.name);
+    // Redefine o nome base (sem extensão) para o input
+    setName(getFileNameWithoutExtension(file.name));
     //   setEmails([]);
   };
 
@@ -111,13 +127,19 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
       alert('O proprietário não pode sair do próprio compartilhamento.');
       return;
     }
+
+    // Validação para o nome do arquivo
+    if (action.value === 'rename' && (!name || name.trim() === '')) {
+      alert('O nome do arquivo não pode estar vazio.');
+      return;
+    }
     
     setIsLoading(true);
     let success = false;
 
     const actions = {
       rename: () =>
-        renameFile({ fileId: file.$id, name, extension: file.extension, path }),
+        renameFile({ fileId: file.$id, name: name.trim(), extension: file.extension, path }),
       share: () => updateFileUsers({ fileId: file.$id, emails, path }),
       delete: () =>
         deleteFile({ fileId: file.$id, bucketFileId: file.bucketFileId, path }),
@@ -156,11 +178,18 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
             {label}
           </DialogTitle>
           {value === "rename" && (
-            <Input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <div className="flex flex-col gap-2">
+              <Input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Digite o nome do arquivo (sem extensão)"
+                className="shad-input"
+              />
+              <p className="text-xs text-light-200">
+                Extensão: .{file.extension}
+              </p>
+            </div>
           )}
           {value === "details" && <FileDetails file={file} />}
           {value === "share" && (
@@ -231,19 +260,19 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
         >
           <DropdownMenuLabel className="max-w-[200px] truncate">
             <div className="flex flex-col">
-              <span>{file.name}</span>
+              <span className="truncate max-w-[180px]">{file.name}</span>
               {isUserLoaded && (
-                <>
-                  {isOwner ? (
-                    <span className="text-xs text-brand font-medium truncate">
-                      👑 Seu arquivo
-                    </span>
-                  ) : (
-                    <span className="text-xs text-gray-500 truncate">
-                      📤 Compartilhado por {file.owner.fullName}
-                    </span>
-                  )}
-                </>
+              <>
+                {isOwner ? (
+                <span className="text-xs text-brand font-medium truncate">
+                  👑 Seu arquivo
+                </span>
+                ) : (
+                <span className="text-xs text-gray-500 truncate">
+                  📤 Compartilhado por {file.owner.fullName}
+                </span>
+                )}
+              </>
               )}
             </div>
           </DropdownMenuLabel>
