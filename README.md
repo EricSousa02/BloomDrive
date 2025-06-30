@@ -282,43 +282,6 @@ await updateFileUsers({
 
 ---
 
-## 🧪 Testes
-
-### Executar testes
-
-```bash
-# Testes unitários
-npm run test
-
-# Testes e2e
-npm run test:e2e
-
-# Coverage
-npm run test:coverage
-```
-
-### Docker
-
-```bash
-# Build da imagem
-docker build -t bloomdrive .
-
-# Execute o container
-docker run -p 3000:3000 bloomdrive
-```
-
-### Netlify
-
-```bash
-# Build para produção
-npm run build
-npm run export
-
-# Deploy pasta out/
-```
-
----
-
 ## 🤝 Contribuindo
 
 Contribuições são sempre bem-vindas! 
