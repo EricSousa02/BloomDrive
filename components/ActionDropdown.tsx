@@ -221,7 +221,14 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
             height={34}
           />
         </DropdownMenuTrigger>
-        <DropdownMenuContent>
+        <DropdownMenuContent 
+          className="shad-dropdown-content"
+          align="end"
+          side="bottom"
+          sideOffset={5}
+          collisionPadding={16}
+          avoidCollisions={true}
+        >
           <DropdownMenuLabel className="max-w-[200px] truncate">
             <div className="flex flex-col">
               <span>{file.name}</span>

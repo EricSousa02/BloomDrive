@@ -180,6 +180,19 @@
   .shad-dropdown-item {
     @apply cursor-pointer !important;
   }
+  .shad-dropdown-content {
+    @apply min-w-[200px] max-w-[280px] z-50 !important;
+    /* Para mobile, melhora o posicionamento */
+    @media (max-width: 640px) {
+      max-width: calc(100vw - 2rem) !important;
+      margin-right: 1rem !important;
+    }
+    /* Para telas muito pequenas */
+    @media (max-width: 400px) {
+      max-width: calc(100vw - 1rem) !important;
+      margin-right: 0.5rem !important;
+    }
+  }
   .shad-dialog {
     @apply rounded-[26px] w-[90%] max-w-[400px] px-6 py-8   !important;
   }
