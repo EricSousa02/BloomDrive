@@ -99,7 +99,7 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
   const handleRemoveFile = (
-    e: React.MouseEvent<HTMLImageElement, MouseEvent>,
+    e: React.MouseEvent<HTMLElement, MouseEvent>,
     fileName: string,
   ) => {
     e.stopPropagation();
@@ -120,7 +120,15 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
       </Button>
       {files.length > 0 && (
         <ul className="uploader-preview-list">
-          <h4 className="h4 text-light-100">Carregando</h4>
+          {/* Indicador de drag para mobile */}
+          <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4 sm:hidden"></div>
+          
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="h4 text-light-100 text-base sm:text-lg">Carregando</h4>
+            <span className="text-xs text-light-200 sm:text-sm">
+              {files.length} arquivo{files.length > 1 ? 's' : ''}
+            </span>
+          </div>
 
           {files.map((file, index) => {
             const { type, extension } = getFileType(file.name);
@@ -130,36 +138,48 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
                 key={`${file.name}-${index}`}
                 className="uploader-preview-item"
               >
-                <div className="flex items-center gap-3">
-                  <Thumbnail
-                    type={type}
-                    extension={extension}
-                    url={convertFileToUrl(file)}
-                  />
+                <div className="flex items-start sm:items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                  <div className="flex-shrink-0">
+                    <Thumbnail
+                      type={type}
+                      extension={extension}
+                      url={convertFileToUrl(file)}
+                      className="!size-8 sm:!size-12"
+                      imageClassName="!size-6 sm:!size-8"
+                    />
+                  </div>
 
-                  <div className="preview-item-name">
-                    {file.name}
-                    <div className="mt-2 flex items-center gap-2">
+                  <div className="preview-item-name flex-1 min-w-0">
+                    <p className="truncate text-sm sm:text-base font-medium">
+                      {file.name}
+                    </p>
+                    <div className="mt-1 sm:mt-2 flex items-center gap-2">
                       <div className="flex-1 h-1 rounded-full bg-black/20 relative overflow-hidden">
                         <div 
                           className="h-full rounded-full bg-brand transition-all duration-300 ease-out"
                           style={{ width: `${uploadProgress[file.name] || 0}%` }}
                         ></div>
                       </div>
-                      <span className="text-xs text-light-100 min-w-[40px] text-right">
+                      <span className="text-xs text-light-100 min-w-[35px] sm:min-w-[40px] text-right font-medium">
                         {Math.round(uploadProgress[file.name] || 0)}%
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <Image
-                  src="/assets/icons/remove.svg"
-                  width={24}
-                  height={24}
-                  alt="Remove"
+                <button
                   onClick={(e) => handleRemoveFile(e, file.name)}
-                />
+                  className="flex-shrink-0 p-1 hover:bg-red/10 rounded transition-colors"
+                  aria-label="Remover arquivo"
+                >
+                  <Image
+                    src="/assets/icons/remove.svg"
+                    width={20}
+                    height={20}
+                    alt="Remove"
+                    className="sm:w-6 sm:h-6"
+                  />
+                </button>
               </li>
             );
           })}

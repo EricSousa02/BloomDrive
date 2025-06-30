@@ -190,31 +190,31 @@ export const getUsageSummary = (totalSpace: any) => {
       size: totalSpace.document.size,
       latestDate: totalSpace.document.latestDate,
       icon: "/assets/icons/file-document-light.svg",
-      url: "/documents",
+      url: "/Documentos",
     },
     {
       title: "Imagens",
       size: totalSpace.image.size,
       latestDate: totalSpace.image.latestDate,
       icon: "/assets/icons/file-image-light.svg",
-      url: "/images",
+      url: "/Imagens",
     },
     {
-      title: "Mídia",
+      title: "Midia",
       size: totalSpace.video.size + totalSpace.audio.size,
       latestDate:
         totalSpace.video.latestDate > totalSpace.audio.latestDate
           ? totalSpace.video.latestDate
           : totalSpace.audio.latestDate,
       icon: "/assets/icons/file-video-light.svg",
-      url: "/media",
+      url: "/Midia",
     },
     {
       title: "Outros",
       size: totalSpace.other.size,
       latestDate: totalSpace.other.latestDate,
       icon: "/assets/icons/file-other-light.svg",
-      url: "/others",
+      url: "/Outros",
     },
   ];
 };
