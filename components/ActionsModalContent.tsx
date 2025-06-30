@@ -202,18 +202,20 @@ export const ShareInput = ({ file, onInputChange, onRemove }: Props) => {
           <div className="flex justify-between">
             <p className="subtitle-2 text-light-100">Compartilhado com</p>
             <p className="subtitle-2 text-light-200">
-              {file.users.length} usuário{file.users.length !== 1 ? 's' : ''}
+              {(file.users || []).length} usuário{(file.users || []).length !== 1 ? 's' : ''}
             </p>
           </div>
 
-          {file.users.length === 0 ? (
+          {(!file.users || file.users.length === 0) ? (
             <div className="pt-2 text-center text-gray-500">
               <p className="text-sm">Nenhum usuário adicionado ainda</p>
               <p className="text-xs">Adicione e-mails acima para compartilhar</p>
             </div>
           ) : (
             <ul className="pt-2 space-y-2">
-              {file.users.map((email: string) => (
+              {file.users
+                .filter((email: string) => email && typeof email === 'string')
+                .map((email: string) => (
                 <li
                   key={email}
                   className="flex items-center justify-between gap-2 bg-gray-50 p-2 rounded-lg"
@@ -221,7 +223,7 @@ export const ShareInput = ({ file, onInputChange, onRemove }: Props) => {
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 bg-brand rounded-full flex items-center justify-center">
                       <span className="text-white text-xs font-medium">
-                        {email.charAt(0).toUpperCase()}
+                        {email?.charAt(0)?.toUpperCase() || '?'}
                       </span>
                     </div>
                     <p className="subtitle-2">{email}</p>

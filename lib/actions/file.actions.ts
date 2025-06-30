@@ -253,10 +253,17 @@ export const leaveFileShare = async ({
 
     // Verifica se o usuário atual está na lista de usuários compartilhados
     const currentUsers = Array.isArray(file.users) ? file.users : [];
-    const userEmails = currentUsers.map((user: any) => user.email);
+    const userEmails = currentUsers
+      .filter((user: any) => user && typeof user === 'string')
+      .map((email: string) => email)
+      .concat(
+        currentUsers
+          .filter((user: any) => user && typeof user === 'object' && user.email)
+          .map((user: any) => user.email)
+      );
     
     // Remove o email do usuário atual da lista
-    const updatedEmails = userEmails.filter((email: string) => email !== currentUser.email);
+    const updatedEmails = userEmails.filter((email: string) => email && email !== currentUser.email);
 
     // Atualiza o arquivo removendo o usuário atual
     const updatedFile = await databases.updateDocument(
