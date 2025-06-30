@@ -90,7 +90,7 @@ Crie um arquivo `.env.local` na raiz do projeto:
 
 ```env
 # Appwrite Configuration
-NEXT_PUBLIC_APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
+NEXT_PUBLIC_APPWRITE_ENDPOINT=https://nyc.cloud.appwrite.io/v1
 NEXT_PUBLIC_APPWRITE_PROJECT=your_project_id
 NEXT_PUBLIC_APPWRITE_DATABASE=your_database_id
 NEXT_PUBLIC_APPWRITE_USERS_COLLECTION=your_users_collection_id
@@ -335,8 +335,8 @@ Este projeto está sob a licença **MIT**. Veja o arquivo [LICENSE](LICENSE) par
 ## 👥 Equipe
 
 ### 🧑‍💻 Desenvolvedor Principal
-- **GitHub**: [@username](https://github.com/EricSousa02)
-- **LinkedIn**: [linkedin.com/in/username](www.linkedin.com/in/eric-sousa-de-andrade-171803240)
+- **GitHub**: [@EricSousa](https://github.com/EricSousa02)
+- **LinkedIn**: [linkedin.com/in/EricSousa](www.linkedin.com/in/eric-sousa-de-andrade-171803240)
 
 ## 🙏 Agradecimentos
 
