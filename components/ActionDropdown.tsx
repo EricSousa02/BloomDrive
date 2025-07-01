@@ -160,6 +160,12 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
   };
 
   const handleRemoveUser = async (email: string) => {
+    // Verificação de segurança: apenas o dono pode remover usuários
+    if (!isOwner) {
+      alert('Apenas o proprietário do arquivo pode remover usuários do compartilhamento.');
+      return;
+    }
+
     const updatedEmails = emails.filter((e) => e !== email);
 
     const success = await updateFileUsers({
@@ -203,6 +209,7 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
               file={file}
               onInputChange={setEmails}
               onRemove={handleRemoveUser}
+              isOwner={isOwner}
             />
           )}
           {value === "delete" && (

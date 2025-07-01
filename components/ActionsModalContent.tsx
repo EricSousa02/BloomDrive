@@ -45,9 +45,10 @@ interface Props {
   file: Models.Document;
   onInputChange: React.Dispatch<React.SetStateAction<string[]>>;
   onRemove: (email: string) => void;
+  isOwner?: boolean;
 }
 
-export const ShareInput = ({ file, onInputChange, onRemove }: Props) => {
+export const ShareInput = ({ file, onInputChange, onRemove, isOwner = false }: Props) => {
   const [inputEmail, setInputEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -137,7 +138,7 @@ export const ShareInput = ({ file, onInputChange, onRemove }: Props) => {
         <div className="subtitle-2 pl-1 text-light-100 mb-2 flex items-center gap-1 flex-wrap">
           <span>Compartilhar arquivo</span>
           <span 
-            className={`text-brand font-semibold ${file.name.length > 30 ? 'truncate max-w-[200px]' : ''}`}
+            className={`text-brand font-semibold ${file.name.length > 40 ? 'truncate max-w-[200px]' : ''}`}
             title={file.name}
           >
             "{file.name}"
@@ -145,28 +146,38 @@ export const ShareInput = ({ file, onInputChange, onRemove }: Props) => {
           <span>com outros usuários</span>
         </div>
         
-        <div className="flex gap-2 mt-2">
-          <Input
-            type="email"
-            placeholder="exemplo@email.com"
-            value={inputEmail}
-            onChange={(e) => handleInputChange(e.target.value)}
-            onKeyPress={handleKeyPress}
-            className="share-input-field flex-1"
-          />
-          <Button
-            onClick={handleAddEmails}
-            className="bg-brand hover:bg-brand/90 text-white px-4 py-2 rounded-lg"
-            disabled={!inputEmail.trim()}
-          >
-            Adicionar
-          </Button>
-        </div>
+        {isOwner ? (
+          <>
+            <div className="flex gap-2 mt-2">
+              <Input
+                type="email"
+                placeholder="exemplo@email.com"
+                value={inputEmail}
+                onChange={(e) => handleInputChange(e.target.value)}
+                onKeyPress={handleKeyPress}
+                className="share-input-field flex-1"
+              />
+              <Button
+                onClick={handleAddEmails}
+                className="bg-brand hover:bg-brand/90 text-white px-4 py-2 rounded-lg"
+                disabled={!inputEmail.trim()}
+              >
+                Adicionar
+              </Button>
+            </div>
 
-        {/* Dica de uso */}
-        <p className="text-sm text-gray-500 mt-1">
-          💡 Dica: Você pode adicionar vários e-mails separados por vírgula
-        </p>
+            {/* Dica de uso */}
+            <p className="text-sm text-gray-500 mt-1">
+              💡 Dica: Você pode adicionar vários e-mails separados por vírgula
+            </p>
+          </>
+        ) : (
+          <div className="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+            <p className="text-sm text-gray-600 text-center">
+              📋 Apenas o proprietário pode adicionar ou remover usuários do compartilhamento
+            </p>
+          </div>
+        )}
 
         {/* Mensagem de sucesso */}
         {successMessage && (
@@ -238,19 +249,21 @@ export const ShareInput = ({ file, onInputChange, onRemove }: Props) => {
                     </div>
                     <p className="subtitle-2 truncate min-w-0" title={email}>{email}</p>
                   </div>
-                  <Button
-                    onClick={() => onRemove(email)}
-                    className="share-remove-user hover:bg-red-100"
-                    size="sm"
-                  >
-                    <Image
-                      src="/assets/icons/remove.svg"
-                      alt="Remover"
-                      width={16}
-                      height={16}
-                      className="remove-icon"
-                    />
-                  </Button>
+                  {isOwner && (
+                    <Button
+                      onClick={() => onRemove(email)}
+                      className="share-remove-user hover:bg-red-100"
+                      size="sm"
+                    >
+                      <Image
+                        src="/assets/icons/remove.svg"
+                        alt="Remover"
+                        width={16}
+                        height={16}
+                        className="remove-icon"
+                      />
+                    </Button>
+                  )}
                 </li>
               ))}
             </ul>
