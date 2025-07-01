@@ -173,11 +173,13 @@ export const getFileIcon = (
 };
 
 // UTILITÁRIOS DE URL DO APPWRITE
+// ⚠️ DEPRECIADO: Estas funções expõem informações sensíveis e devem ser substituídas pelas URLs seguras
 // Constrói URL de arquivo do appwrite - https://appwrite.io/docs/apis/rest#images
 export const constructFileUrl = (bucketFileId: string) => {
   return `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${process.env.NEXT_PUBLIC_APPWRITE_BUCKET}/files/${bucketFileId}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT}`;
 };
 
+// ⚠️ DEPRECIADO: Use constructSecureDownloadUrl() em vez desta função
 export const constructDownloadUrl = (bucketFileId: string) => {
   return `${process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}/storage/buckets/${process.env.NEXT_PUBLIC_APPWRITE_BUCKET}/files/${bucketFileId}/download?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT}`;
 };
@@ -232,4 +234,44 @@ export const getFileTypesParams = (type: string) => {
     default:
       return ["document"];
   }
+};
+
+// URL segura para visualização de arquivos via proxy interno
+export const constructSecureViewUrl = (fileId: string) => {
+  return `/api/files/${fileId}/view`;
+};
+
+// URL segura para download de arquivos via proxy interno
+export const constructSecureDownloadUrl = (fileId: string, fileName: string) => {
+  return `/api/files/${fileId}/download?filename=${encodeURIComponent(fileName)}`;
+};
+
+// Função para verificar se o arquivo é visualizável no navegador
+export const isFileViewable = (extension: string) => {
+  const viewableExtensions = [
+    // Imagens
+    'jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp',
+    // Documentos
+    'pdf', 'txt', 'md', 'json', 'xml', 'csv',
+    // Vídeos
+    'mp4', 'webm', 'ogv',
+    // Áudios  
+    'mp3', 'wav', 'oga', 'aac'
+  ];
+  return viewableExtensions.includes(extension.toLowerCase());
+};
+
+// Função para verificar se o arquivo deve ser reproduzido no navegador
+export const isMediaPlayable = (extension: string) => {
+  const playableExtensions = [
+    'mp4', 'webm', 'ogv', // vídeos
+    'mp3', 'wav', 'aac', 'oga'   // áudios
+  ];
+  return playableExtensions.includes(extension.toLowerCase());
+};
+
+// Função para verificar se é arquivo de vídeo
+export const isVideoFile = (extension: string) => {
+  const videoExtensions = ['mp4', 'webm', 'ogv', 'avi', 'mov'];
+  return videoExtensions.includes(extension.toLowerCase());
 };

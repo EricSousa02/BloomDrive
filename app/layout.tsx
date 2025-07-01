@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins } from 'next/font/google'
+import HydrationZustand from "@/components/HydrationZustand";
 
 import "./globals.css";
 
@@ -47,7 +48,9 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body
         className={`${poppins.variable} font-poppins antialiased`}
+        suppressHydrationWarning={true}
       >
+        <HydrationZustand />
         {children}
       </body>
     </html>

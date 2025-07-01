@@ -8,7 +8,8 @@ import { FormattedDateTime } from "@/components/FormattedDateTime";
 import { Thumbnail } from "@/components/Thumbnail";
 import { Separator } from "@/components/ui/separator";
 import { getFiles, getTotalSpaceUsed } from "@/lib/actions/file.actions";
-import { convertFileSize, getUsageSummary } from "@/lib/utils";
+import { convertFileSize, getUsageSummary, constructSecureViewUrl, isFileViewable } from "@/lib/utils";
+import ClientOnly from "@/components/ClientOnly";
 
 const Dashboard = async () => {
   // Requisições paralelas
@@ -64,33 +65,53 @@ const Dashboard = async () => {
         <h2 className="h3 xl:h2 text-light-100">Arquivos recentes enviados</h2>
         {files.documents.length > 0 ? (
           <ul className="mt-5 flex flex-col gap-5">
-            {files.documents.map((file: Models.Document) => (
-              <Link
-                href={file.url}
-                target="_blank"
-                className="flex items-center gap-3"
-                key={file.$id}
-              >
-                <Thumbnail
-                  type={file.type}
-                  extension={file.extension}
-                  url={file.url}
-                />
+            {files.documents.map((file: Models.Document) => {
+              const isViewable = isFileViewable(file.extension);
+              const viewUrl = isViewable ? constructSecureViewUrl(file.$id) : "#";
+              
+              const FileItem = () => (
+                <>
+                  <Thumbnail
+                    type={file.type}
+                    extension={file.extension}
+                    url={file.url} // Use URL original para SSR, será atualizada no cliente
+                  />
 
-                <div className="recent-file-details">
-                  <div className="flex flex-col gap-1 flex-1 min-w-0">
-                    <p className="recent-file-name truncate">{file.name}</p>
-                    <FormattedDateTime
-                      date={file.$createdAt}
-                      className="caption"
-                    />
+                  <div className="recent-file-details">
+                    <div className="flex flex-col gap-1 flex-1 min-w-0">
+                      <p className="recent-file-name truncate">{file.name}</p>
+                      <FormattedDateTime
+                        date={file.$createdAt}
+                        className="caption"
+                      />
+                    </div>
+                    <div className="flex-shrink-0">
+                      <ClientOnly fallback={<div className="w-8 h-8" />}>
+                        <ActionDropdown file={file} />
+                      </ClientOnly>
+                    </div>
                   </div>
-                  <div className="flex-shrink-0">
-                    <ActionDropdown file={file} />
-                  </div>
-                </div>
-              </Link>
-            ))}
+                </>
+              );
+
+              return (
+                <li key={file.$id}>
+                  {isViewable ? (
+                    <Link
+                      href={viewUrl}
+                      target="_blank"
+                      className="flex items-center gap-3"
+                    >
+                      <FileItem />
+                    </Link>
+                  ) : (
+                    <div className="flex items-center gap-3 cursor-default">
+                      <FileItem />
+                    </div>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <p className="empty-list">Nenhum arquivo enviado</p>

@@ -266,11 +266,14 @@ await updateFileUsers({
 
 ### 🔒 **Segurança**
 
-- **Validação client/server-side**
-- **Sanitização de inputs**
-- **Proteção CSRF** com tokens
-- **Rate limiting** para APIs
-- **Permissões granulares**
+- **URLs Seguras**: Sistema de proxy interno para ocultar IDs de bucket/projeto
+- **Autenticação por Sessão**: Verificação de permissões em cada requisição
+- **Validação client/server-side** com schemas Zod
+- **Sanitização de inputs** para prevenção de XSS
+- **Proteção CSRF** com tokens seguros
+- **Rate limiting** para APIs críticas
+- **Permissões granulares** por arquivo e usuário
+- **Isolamento de dados** por usuário autenticado
 
 ### 📱 **Responsividade**
 

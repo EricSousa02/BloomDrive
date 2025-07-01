@@ -20,7 +20,7 @@ import Image from "next/image";
 import { Models } from "node-appwrite";
 import { actionsDropdownItems } from "@/constants";
 import Link from "next/link";
-import { constructDownloadUrl } from "@/lib/utils";
+import { constructSecureDownloadUrl } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -51,8 +51,14 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
   const [emails, setEmails] = useState<string[]>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isUserLoaded, setIsUserLoaded] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const path = usePathname();
+
+  // Garantir que o componente está montado no cliente
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Atualiza o nome quando o arquivo é alterado (após renomeação)
   useEffect(() => {
@@ -89,7 +95,7 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
 
   // Filtra as ações baseado nas permissões
   const getAvailableActions = () => {
-    if (!isUserLoaded || !currentUser) return actionsDropdownItems;
+    if (!isMounted || !isUserLoaded || !currentUser) return actionsDropdownItems;
     
     return actionsDropdownItems.filter(action => {
       // Apenas o dono pode renomear e deletar
@@ -261,7 +267,7 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
           <DropdownMenuLabel className="max-w-[200px] truncate">
             <div className="flex flex-col">
               <span className="truncate max-w-[180px]">{file.name}</span>
-              {isUserLoaded && (
+              {isMounted && isUserLoaded && (
               <>
                 {isOwner ? (
                 <span className="text-xs text-brand font-medium truncate">
@@ -295,7 +301,7 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
             >
               {actionItem.value === "download" ? (
                 <Link
-                  href={constructDownloadUrl(file.bucketFileId)}
+                  href={constructSecureDownloadUrl(file.$id, file.name)}
                   download={file.name}
                   className="flex items-center gap-2"
                 >
