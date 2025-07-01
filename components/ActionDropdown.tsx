@@ -208,13 +208,13 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
           {value === "delete" && (
             <p className="delete-confirmation">
               Tem certeza de que deseja excluir{` `}
-              <span className="delete-file-name">{file.name}</span>?
+              <span className="delete-file-name truncate block max-w-full" title={file.name}>{file.name}</span>?
             </p>
           )}
           {value === "leave" && (
             <p className="delete-confirmation">
               Tem certeza de que deseja sair do compartilhamento do arquivo{` `}
-              <span className="delete-file-name">{file.name}</span>?
+              <span className="delete-file-name truncate block max-w-full" title={file.name}>{file.name}</span>?
               <br />
               <span className="text-sm text-light-200 mt-2 block">
                 Você não terá mais acesso a este arquivo.

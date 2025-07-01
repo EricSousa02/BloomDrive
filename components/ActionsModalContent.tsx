@@ -9,9 +9,11 @@ import Image from "next/image";
 
 const ImageThumbnail = ({ file }: { file: Models.Document }) => (
   <div className="file-details-thumbnail">
-    <Thumbnail type={file.type} extension={file.extension} url={file.url} />
-    <div className="flex flex-col">
-      <p className="subtitle-2 mb-1">{file.name}</p>
+    <div className="flex-shrink-0">
+      <Thumbnail type={file.type} extension={file.extension} url={file.url} />
+    </div>
+    <div className="flex flex-col min-w-0 flex-1 overflow-hidden">
+      <p className="subtitle-2 mb-1 truncate" title={file.name}>{file.name}</p>
       <FormattedDateTime date={file.$createdAt} className="caption" />
     </div>
   </div>
@@ -19,8 +21,8 @@ const ImageThumbnail = ({ file }: { file: Models.Document }) => (
 
 const DetailRow = ({ label, value }: { label: string; value: string }) => (
   <div className="flex">
-    <p className="file-details-label text-left">{label}</p>
-    <p className="file-details-value text-left">{value}</p>
+    <p className="file-details-label text-left flex-shrink-0">{label}</p>
+    <p className="file-details-value text-left truncate min-w-0" title={value}>{value}</p>
   </div>
 );
 
@@ -132,9 +134,16 @@ export const ShareInput = ({ file, onInputChange, onRemove }: Props) => {
       <ImageThumbnail file={file} />
 
       <div className="share-wrapper">
-        <p className="subtitle-2 pl-1 text-light-100">
-          Compartilhar arquivo com outros usuários
-        </p>
+        <div className="subtitle-2 pl-1 text-light-100 mb-2 flex items-center gap-1 flex-wrap">
+          <span>Compartilhar arquivo</span>
+          <span 
+            className={`text-brand font-semibold ${file.name.length > 30 ? 'truncate max-w-[200px]' : ''}`}
+            title={file.name}
+          >
+            "{file.name}"
+          </span>
+          <span>com outros usuários</span>
+        </div>
         
         <div className="flex gap-2 mt-2">
           <Input
@@ -221,13 +230,13 @@ export const ShareInput = ({ file, onInputChange, onRemove }: Props) => {
                   key={email}
                   className="flex items-center justify-between gap-2 bg-gray-50 p-2 rounded-lg"
                 >
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-brand rounded-full flex items-center justify-center">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <div className="w-6 h-6 bg-brand rounded-full flex items-center justify-center flex-shrink-0">
                       <span className="text-white text-xs font-medium">
                         {email?.charAt(0)?.toUpperCase() || '?'}
                       </span>
                     </div>
-                    <p className="subtitle-2">{email}</p>
+                    <p className="subtitle-2 truncate min-w-0" title={email}>{email}</p>
                   </div>
                   <Button
                     onClick={() => onRemove(email)}
