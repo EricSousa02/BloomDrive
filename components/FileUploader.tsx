@@ -9,8 +9,9 @@ import Image from "next/image";
 import Thumbnail from "@/components/Thumbnail";
 import { MAX_FILE_SIZE } from "@/constants";
 import { useToast } from "@/hooks/use-toast";
-import { uploadFile } from "@/lib/actions/file.actions";
-import { usePathname } from "next/navigation";
+import { uploadFileDirectly } from "@/lib/appwrite/client";
+import { usePathname, useRouter } from "next/navigation";
+import { UploadProgress } from "appwrite";
 
 interface Props {
   ownerId: string;
@@ -23,26 +24,6 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
   const { toast } = useToast();
   const [files, setFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
-
-  const simulateProgress = (fileName: string, fileSize: number): Promise<void> => {
-    return new Promise((resolve) => {
-      let progress = 0;
-      const increment = Math.random() * 15 + 5; // Incrementos de 5-20%
-      const baseTime = Math.min(fileSize / 1000000 * 100, 300); // Tempo base baseado no tamanho do arquivo
-      
-      const interval = setInterval(() => {
-        progress += increment;
-        if (progress >= 100) {
-          progress = 100;
-          setUploadProgress(prev => ({ ...prev, [fileName]: progress }));
-          clearInterval(interval);
-          resolve();
-        } else {
-          setUploadProgress(prev => ({ ...prev, [fileName]: progress }));
-        }
-      }, baseTime + Math.random() * 200); // Intervalo variável para sensação realista
-    });
-  };
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
@@ -68,11 +49,19 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
         // Inicializa o progresso para este arquivo
         setUploadProgress(prev => ({ ...prev, [file.name]: 0 }));
 
-        // Inicia a simulação de progresso
-        const progressPromise = simulateProgress(file.name, file.size);
-
-        // Inicia o upload real
-        const uploadPromise = uploadFile({ file, ownerId, accountId, path }).then(
+        // Inicia o upload direto para o Appwrite
+        const uploadPromise = uploadFileDirectly({ 
+          file, 
+          ownerId, 
+          accountId,
+          onProgress: (progress: UploadProgress) => {
+            // Calcula progresso real baseado nos bytes enviados
+            const percent = progress.chunksTotal > 0 
+              ? Math.round((progress.chunksUploaded / progress.chunksTotal) * 100)
+              : 0;
+            setUploadProgress(prev => ({ ...prev, [file.name]: percent }));
+          }
+        }).then(
           (uploadedFile) => {
             if (uploadedFile) {
               setFiles((prevFiles) =>
@@ -83,17 +72,48 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
                 delete newProgress[file.name];
                 return newProgress;
               });
+              
+              // Recarrega a página para mostrar o novo arquivo
+              window.location.reload();
             }
           },
-        );
+        ).catch((error) => {
+          // Remove o arquivo da lista em caso de erro
+          setFiles((prevFiles) =>
+            prevFiles.filter((f) => f.name !== file.name),
+          );
+          setUploadProgress(prev => {
+            const newProgress = { ...prev };
+            delete newProgress[file.name];
+            return newProgress;
+          });
+          
+          // Tratamento específico para diferentes tipos de erro
+          let errorMessage = "Erro no upload do arquivo.";
+          
+          if (error?.message?.includes('413') || error?.status === 413) {
+            errorMessage = "Arquivo muito grande. Limite do Appwrite é 50MB.";
+          } else if (error?.message?.includes('timeout')) {
+            errorMessage = "Upload demorou muito tempo. Verifique sua conexão.";
+          }
+          
+          toast({
+            description: (
+              <p className="body-2 text-white">
+                <span className="font-semibold">{file.name}</span>: {errorMessage}
+              </p>
+            ),
+            className: "error-toast",
+          });
+        });
 
-        // Aguarda tanto a simulação de progresso quanto o upload completarem
-        await Promise.all([progressPromise, uploadPromise]);
+        // Aguarda o upload completar
+        await uploadPromise;
       });
 
       await Promise.all(uploadPromises);
     },
-    [ownerId, accountId, path],
+    [ownerId, accountId],
   );
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });

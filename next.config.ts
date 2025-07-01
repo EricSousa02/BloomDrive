@@ -14,8 +14,16 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     serverActions: {
-      bodySizeLimit: "100MB",
+      bodySizeLimit: "50MB",
     },
+  },
+  // Configurações específicas para Vercel
+  api: {
+    bodyParser: {
+      sizeLimit: '50mb',
+    },
+    responseLimit: '50mb',
+    externalResolver: true,
   },
   images: {
     remotePatterns: [
