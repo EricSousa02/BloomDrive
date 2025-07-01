@@ -35,7 +35,24 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "nyc.cloud.appwrite.io",
       },
+      // Permitir URLs locais para desenvolvimento
+      {
+        protocol: "http",
+        hostname: "localhost",
+      },
+      {
+        protocol: "https",
+        hostname: "localhost",
+      },
+      // Permitir domínios da Vercel (padrão genérico)
+      {
+        protocol: "https",
+        hostname: "*.vercel.app",
+      },
     ],
+    // Permitir otimização de URLs de API internas
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
   },
 };
 

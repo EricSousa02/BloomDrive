@@ -18,6 +18,7 @@ export const Thumbnail = ({
   className,
 }: Props) => {
   const isImage = type === "image" && extension !== "svg";
+  const isSecureUrl = url.startsWith("/api/files/");
 
   return (
     <figure className={cn("thumbnail", className)}>
@@ -31,6 +32,10 @@ export const Thumbnail = ({
           imageClassName,
           isImage && "thumbnail-image",
         )}
+        // Desabilita otimização apenas para URLs de API internas
+        unoptimized={isSecureUrl}
+        // Mantém qualidade alta
+        quality={95}
       />
     </figure>
   );
