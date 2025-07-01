@@ -5,6 +5,7 @@ import {
   SheetContent,
   SheetTitle,
   SheetTrigger,
+  SheetDescription,
 } from "@/components/ui/sheet";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
@@ -76,6 +77,9 @@ const MobileNavigation = ({
             </div>
             <Separator className="mb-4 bg-light-200/20" />
           </SheetTitle>
+          <SheetDescription className="sr-only">
+            Menu de navegação principal com acesso às suas pastas e configurações.
+          </SheetDescription>
 
           <nav className="mobile-nav">
             <ul className="mobile-nav-list">
