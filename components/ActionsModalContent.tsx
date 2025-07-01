@@ -32,6 +32,7 @@ export const FileDetails = ({ file }: { file: Models.Document }) => {
         <DetailRow label="Formato:" value={file.extension} />
         <DetailRow label="Tamanho:" value={convertFileSize(file.size)} />
         <DetailRow label="Proprietário:" value={file.owner.fullName} />
+        <DetailRow label="Email:" value={file.owner.email} />
         <DetailRow label="Última edição:" value={formatDateTime(file.$updatedAt)} />
       </div>
     </>
