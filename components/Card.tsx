@@ -11,18 +11,10 @@ import { useEffect, useState } from "react";
 
 const Card = ({ file }: { file: Models.Document }) => {
   const [isMounted, setIsMounted] = useState(false);
-  const [isCardReady, setIsCardReady] = useState(false);
   
   // Garante que o componente está montado no cliente
   useEffect(() => {
     setIsMounted(true);
-    
-    // Marca o card como pronto após hidratação
-    const timer = setTimeout(() => {
-      setIsCardReady(true);
-    }, 50);
-
-    return () => clearTimeout(timer);
   }, []);
 
   // Usa URL segura se o arquivo for visualizável, senão desabilita o link
@@ -41,8 +33,8 @@ const Card = ({ file }: { file: Models.Document }) => {
         />
 
         <div className="flex flex-col items-end justify-between">
-          <ClientOnly fallback={<div className="w-8 h-8 bg-gray-200 animate-pulse rounded" />}>
-            {isCardReady ? <ActionDropdown file={file} /> : <div className="w-8 h-8" />}
+          <ClientOnly fallback={<div className="w-8 h-8" />}>
+            <ActionDropdown file={file} />
           </ClientOnly>
           <p className="body-1">{convertFileSize(file.size)}</p>
         </div>

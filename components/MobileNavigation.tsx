@@ -8,8 +8,8 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import Image from "next/image";
-import React, { useState, useEffect, useMemo } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Separator } from "@radix-ui/react-separator";
 import { navItems } from "@/constants";
 import Link from "next/link";
@@ -34,55 +34,12 @@ const MobileNavigation = ({
   email,
 }: Props) => {
   const [open, setOpen] = useState(false);
-  const [isHydrated, setIsHydrated] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
-
-  // Memoize componentes pesados para evitar re-renderizações
-  const memoizedNavItems = useMemo(() => navItems, []);
-
-  // Controla hidratação para evitar comportamento inconsistente
-  useEffect(() => {
-    setIsHydrated(true);
-    
-    // Preload das rotas principais
-    const timer = setTimeout(() => {
-      memoizedNavItems.forEach(({ url }) => {
-        router.prefetch(url);
-      });
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, [router, memoizedNavItems]);
 
   // Fecha a navegação mobile quando a rota muda
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
-
-  // Handler otimizado para cliques na navegação
-  const handleNavClick = (url: string) => {
-    setOpen(false);
-    if (pathname !== url) {
-      router.push(url);
-    }
-  };
-
-  // Não renderiza até estar hidratado
-  if (!isHydrated) {
-    return (
-      <header className="mobile-header">
-        <Image
-          src="/assets/images/bloomdriveicon.png"
-          alt="logo"
-          width={65}
-          height={70}
-          className="h-auto p-1"
-        />
-        <div className="w-[30px] h-[30px]" /> {/* Placeholder */}
-      </header>
-    );
-  }
 
   return (
     <header className="mobile-header">
@@ -126,15 +83,13 @@ const MobileNavigation = ({
 
           <nav className="mobile-nav">
             <ul className="mobile-nav-list">
-              {memoizedNavItems.map(({ url, name, icon }) => (
-                <li key={name} className="lg:w-full">
-                  <button
-                    onClick={() => handleNavClick(url)}
+              {navItems.map(({ url, name, icon }) => (
+                <Link key={name} href={url} className="lg:w-full">
+                  <li
                     className={cn(
-                      "mobile-nav-item w-full text-left",
+                      "mobile-nav-item",
                       pathname === url && "shad-active",
                     )}
-                    type="button"
                   >
                     <Image
                       src={icon}
@@ -145,11 +100,10 @@ const MobileNavigation = ({
                         "nav-icon",
                         pathname === url && "nav-icon-active",
                       )}
-                      priority={name === "Dashboard"} // Prioridade para o Dashboard
                     />
                     <p>{name}</p>
-                  </button>
-                </li>
+                  </li>
+                </Link>
               ))}
             </ul>
           </nav>

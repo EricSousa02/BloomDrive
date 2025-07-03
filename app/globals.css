@@ -441,7 +441,7 @@
     @apply bg-brand/10 !important;
   }
   .mobile-nav-item {
-    @apply flex text-light-100 gap-4 w-full justify-start items-center h5 px-6 h-[52px] rounded-full transition-all duration-200 ease-in-out !important;
+    @apply flex text-light-100 gap-4 w-full justify-start items-center h5 px-6 h-[52px] rounded-full !important;
   }
   .mobile-nav-item:hover:not(.shad-active) {
     @apply bg-brand/10 !important;

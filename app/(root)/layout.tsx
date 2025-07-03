@@ -5,7 +5,6 @@ import Header from "@/components/Header";
 import { getCurrentUser } from "@/lib/actions/user.actions";
 import { redirect } from "next/navigation";
 import { Toaster } from "@/components/ui/toaster";
-import PreloadNavigation from "@/components/PreloadNavigation";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +15,6 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
 
   return (
     <main className="flex h-screen">
-      <PreloadNavigation />
       <Sidebar {...currentUser} />
 
       <section className="flex h-full flex-1 flex-col">

@@ -7,22 +7,11 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Suprimir warnings de hidratação em desenvolvimento
-  onDemandEntries: {
-    maxInactiveAge: 25 * 1000,
-    pagesBufferLength: 2,
-  },
   experimental: {
     serverActions: {
       bodySizeLimit: "50MB",
     },
-    // Otimizações de performance
-    optimizeCss: true,
-    esmExternals: true,
   },
-  // Configurações de performance
-  poweredByHeader: false,
-  compress: true,
   images: {
     remotePatterns: [
       {
