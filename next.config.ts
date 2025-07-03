@@ -16,7 +16,15 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: "50MB",
     },
+    // Otimizações de performance
+    optimizeCss: true,
+    esmExternals: true,
   },
+  // Configurações de performance
+  poweredByHeader: false,
+  compress: true,
+  // Prefetch mais agressivo
+  prefetchMode: "auto",
   images: {
     remotePatterns: [
       {

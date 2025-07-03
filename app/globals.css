@@ -387,25 +387,22 @@
 
   /* Mobile Navigation */
   .mobile-header {
-    @apply flex h-[60px] justify-between px-5 sm:hidden !important;
+    @apply flex h-[60px] justify-between px-5 sm:hidden transition-all duration-200 ease-in-out !important;
   }
   .header-user {
-    @apply my-3 flex items-center gap-2 rounded-full p-1 text-light-100 sm:justify-center sm:bg-brand/10 lg:justify-start lg:p-3 !important;
+    @apply my-3 flex items-center gap-2 rounded-full p-1 text-light-100 sm:justify-center sm:bg-brand/10 lg:justify-start lg:p-3 transition-all duration-200 ease-in-out !important;
   }
   .header-user-avatar {
-    @apply aspect-square w-10 rounded-full object-cover !important;
+    @apply aspect-square w-10 rounded-full object-cover transition-all duration-200 ease-in-out !important;
   }
   .mobile-nav {
-    @apply h5 flex-1 gap-1 text-brand !important;
+    @apply h5 flex-1 gap-1 text-brand transition-all duration-200 ease-in-out !important;
   }
   .mobile-nav-list {
-    @apply flex flex-1 flex-col gap-4 !important;
-  }
-  .mobile-nav-item {
-    @apply flex text-light-100 gap-4 w-full justify-start items-center h5 px-6 h-[52px] rounded-full !important;
+    @apply flex flex-1 flex-col gap-4 transition-all duration-200 ease-in-out !important;
   }
   .mobile-sign-out-button {
-    @apply h5 flex h-[52px] w-full items-center gap-4 rounded-full bg-brand/10 px-6 text-brand shadow-none transition-all hover:bg-brand/20 !important;
+    @apply h5 flex h-[52px] w-full items-center gap-4 rounded-full bg-brand/10 px-6 text-brand shadow-none transition-all duration-200 ease-in-out hover:bg-brand/20 !important;
   }
 
   /* OTP Modal */
@@ -432,16 +429,25 @@
 
   /* Sidebar */
   .sidebar {
-    @apply remove-scrollbar hidden h-screen w-[90px] flex-col overflow-auto px-5 py-7 sm:flex lg:w-[280px] xl:w-[325px] !important;
+    @apply remove-scrollbar hidden h-screen w-[90px] flex-col overflow-auto px-5 py-7 sm:flex lg:w-[280px] xl:w-[325px] transition-all duration-200 ease-in-out !important;
   }
   .sidebar-nav {
-    @apply h5 mt-9 flex-1 gap-1 text-brand !important;
+    @apply h5 mt-9 flex-1 gap-1 text-brand transition-all duration-200 ease-in-out !important;
   }
   .sidebar-nav-item {
-    @apply flex text-light-100 gap-4 rounded-xl lg:w-full justify-center lg:justify-start items-center h5 lg:px-[30px] h-[52px] lg:rounded-full !important;
+    @apply flex text-light-100 gap-4 rounded-xl lg:w-full justify-center lg:justify-start items-center h5 lg:px-[30px] h-[52px] lg:rounded-full transition-all duration-200 ease-in-out !important;
+  }
+  .sidebar-nav-item:hover:not(.shad-active) {
+    @apply bg-brand/10 !important;
+  }
+  .mobile-nav-item {
+    @apply flex text-light-100 gap-4 w-full justify-start items-center h5 px-6 h-[52px] rounded-full transition-all duration-200 ease-in-out !important;
+  }
+  .mobile-nav-item:hover:not(.shad-active) {
+    @apply bg-brand/10 !important;
   }
   .sidebar-user-info {
-    @apply mt-4 flex items-center justify-center gap-2 rounded-full bg-brand/10 p-1 text-light-100 lg:justify-start lg:p-3 !important;
+    @apply mt-4 flex items-center justify-center gap-2 rounded-full bg-brand/10 p-1 text-light-100 lg:justify-start lg:p-3 transition-all duration-200 ease-in-out !important;
   }
   .sidebar-user-avatar {
     @apply aspect-square w-10 rounded-full object-cover !important;
@@ -449,6 +455,9 @@
 
   .shad-active {
     @apply bg-brand text-white shadow-drop-2 !important;
+  }
+  .shad-active:hover {
+    @apply bg-brand text-white !important;
   }
 
   /* Sort */

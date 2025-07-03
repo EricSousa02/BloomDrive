@@ -52,12 +52,20 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isUserLoaded, setIsUserLoaded] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [isDropdownReady, setIsDropdownReady] = useState(false);
 
   const path = usePathname();
 
   // Garantir que o componente está montado no cliente
   useEffect(() => {
     setIsMounted(true);
+    
+    // Marca o dropdown como pronto após hidratação
+    const timer = setTimeout(() => {
+      setIsDropdownReady(true);
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
 
   // Atualiza o nome quando o arquivo é alterado (após renomeação)
@@ -255,13 +263,20 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
   return (
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
       <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
-        <DropdownMenuTrigger className="shad-no-focus">
-          <Image
-            src="/assets/icons/dots.svg"
-            alt="dots"
-            width={34}
-            height={34}
-          />
+        <DropdownMenuTrigger 
+          className="shad-no-focus"
+          disabled={!isDropdownReady}
+        >
+          {isDropdownReady ? (
+            <Image
+              src="/assets/icons/dots.svg"
+              alt="dots"
+              width={34}
+              height={34}
+            />
+          ) : (
+            <div className="w-[34px] h-[34px] bg-gray-200 animate-pulse rounded" />
+          )}
         </DropdownMenuTrigger>
         <DropdownMenuContent 
           className="shad-dropdown-content"
