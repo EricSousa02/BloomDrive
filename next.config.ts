@@ -23,8 +23,6 @@ const nextConfig: NextConfig = {
   // Configurações de performance
   poweredByHeader: false,
   compress: true,
-  // Prefetch mais agressivo
-  prefetchMode: "auto",
   images: {
     remotePatterns: [
       {
