@@ -2,7 +2,7 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
 // se precisar de modo escuro, posso descomentar a linha abaixo	
-//   darkMode: ["class"],
+  darkMode: ["class"],
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -13,7 +13,8 @@ const config: Config = {
   		colors: {
   			brand: {
   				'100': '#A8E6A1',
-  				DEFAULT: '#76C893'
+  				DEFAULT: '#76C893',
+  				'dark': '#4A8B5A'
   			},
   			red: '#FF7474',
   			error: '#b80000',

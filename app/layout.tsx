@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins } from 'next/font/google'
 import HydrationZustand from "@/components/HydrationZustand";
+import { SimpleThemeProvider } from "@/components/SimpleThemeProvider";
 
 import "./globals.css";
 
@@ -45,13 +46,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" className="light">
       <body
         className={`${poppins.variable} font-poppins antialiased`}
-        suppressHydrationWarning={true}
       >
-        <HydrationZustand />
-        {children}
+        <SimpleThemeProvider>
+          <HydrationZustand />
+          {children}
+        </SimpleThemeProvider>
       </body>
     </html>
   );

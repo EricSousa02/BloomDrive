@@ -16,6 +16,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import FileUploader from "@/components/FileUploader";
+import { SimpleThemeToggle } from "@/components/SimpleThemeToggle";
 import { signOutUser } from "@/lib/actions/user.actions";
 
 interface Props {
@@ -51,15 +52,17 @@ const MobileNavigation = ({
         className="h-auto p-1"
       />
 
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger>
-          <Image
-            src="/assets/icons/menu.svg"
-            alt="Search"
-            width={30}
-            height={30}
-          />
-        </SheetTrigger>
+      <div className="flex items-center gap-3">
+        <SimpleThemeToggle />
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger>
+            <Image
+              src="/assets/icons/menu.svg"
+              alt="Menu"
+              width={30}
+              height={30}
+            />
+          </SheetTrigger>
         <SheetContent className="shad-sheet h-screen px-3">
           <SheetTitle>
             <div className="header-user">
@@ -128,6 +131,7 @@ const MobileNavigation = ({
           </div>
         </SheetContent>
       </Sheet>
+      </div>
     </header>
   );
 };

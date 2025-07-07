@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { uploadFileDirectly } from "@/lib/appwrite/client";
 import { usePathname, useRouter } from "next/navigation";
 import { UploadProgress } from "appwrite";
+import { useSimpleTheme } from "@/components/SimpleThemeProvider";
 
 interface Props {
   ownerId: string;
@@ -22,8 +23,12 @@ interface Props {
 const FileUploader = ({ ownerId, accountId, className }: Props) => {
   const path = usePathname();
   const { toast } = useToast();
+  const { isDark } = useSimpleTheme();
   const [files, setFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
+
+  // Determina qual ícone usar baseado diretamente no tema
+  const uploadIcon = isDark ? "/assets/icons/upload-dark.svg" : "/assets/icons/upload.svg";
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
@@ -131,11 +136,12 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
       <input {...getInputProps()} />
       <Button type="button" className={cn("uploader-button w-full", className)}>
         <Image
-          src="/assets/icons/upload.svg"
+          src={uploadIcon}
           alt="upload"
           width={24}
           height={24}
-        />{" "}
+          suppressHydrationWarning={true}
+        />
         <p>Upload</p>
       </Button>
       {files.length > 0 && (

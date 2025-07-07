@@ -159,7 +159,7 @@ export const ShareInput = ({ file, onInputChange, onRemove, isOwner = false }: P
               />
               <Button
                 onClick={handleAddEmails}
-                className="bg-brand hover:bg-brand/90 text-white px-4 py-2 rounded-lg"
+                className="add-user-button"
                 disabled={!inputEmail.trim()}
               >
                 Adicionar

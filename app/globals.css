@@ -7,8 +7,30 @@
     @apply scroll-smooth;
   }
 
+  /* Previne FOUC e garante que o tema seja aplicado antes da hidratação */
+  html {
+    visibility: hidden;
+  }
+
+  html.light,
+  html.dark,
+  html[data-theme] {
+    visibility: visible;
+  }
+
+  /* Força visibilidade após timeout para casos extremos */
+  html {
+    --show-timeout: 100ms;
+  }
+
   body {
     @apply bg-white text-dark-200 min-h-screen antialiased;
+  }
+
+  /* Modo escuro */
+  .dark body,
+  html[data-resolved-theme="dark"] body {
+    @apply bg-dark-100 text-light-300 min-h-screen antialiased;
   }
 
   /* Remove scrollbar */
@@ -136,6 +158,9 @@
   .primary-btn {
     @apply bg-brand hover:bg-brand-100 transition-all rounded-full button !important;
   }
+  .dark .primary-btn {
+    @apply bg-brand-dark hover:bg-brand-dark/80 !important;
+  }
   .flex-center {
     @apply flex items-center justify-center;
   }
@@ -151,6 +176,9 @@
   .shad-form-item {
     @apply flex h-[78px] flex-col justify-center rounded-xl border border-light-300 px-4 shadow-drop-1;
   }
+  .dark .shad-form-item {
+    @apply border-light-200/30 bg-dark-200/50 !important;
+  }
   .shad-form-label {
     @apply text-light-100 pt-2 body-2 w-full !important;
   }
@@ -160,14 +188,23 @@
   .shad-alert-dialog {
     @apply space-y-4 max-w-[95%] sm:w-fit rounded-xl md:rounded-[30px] px-4 md:px-8 py-10 bg-white outline-none !important;
   }
+  .dark .shad-alert-dialog {
+    @apply bg-dark-200 border border-light-200/20 !important;
+  }
   .shad-submit-btn {
     @apply bg-brand button hover:bg-brand-100 transition-all rounded-full !important;
+  }
+  .dark .shad-submit-btn {
+    @apply bg-brand-dark hover:bg-brand-dark/80 !important;
   }
   .shad-otp {
     @apply w-full flex gap-1 sm:gap-2 justify-between !important;
   }
   .shad-otp-slot {
     @apply text-[40px] font-medium rounded-xl ring-brand shadow-drop-1 text-brand-100 justify-center flex border-2 border-light-300 size-12 md:size-16 gap-5 !important;
+  }
+  .dark .shad-otp-slot {
+    @apply text-brand-dark border-light-200/30 !important;
   }
 
   .shad-sheet {
@@ -207,8 +244,14 @@
   .nav-icon {
     @apply w-6 filter invert opacity-25 !important;
   }
+  .dark .nav-icon {
+    @apply invert-0 opacity-60 !important;
+  }
   .nav-icon-active {
     @apply invert-0 opacity-100 !important;
+  }
+  .dark .nav-icon-active {
+    @apply invert opacity-100 !important;
   }
 
   /* =====  STYLE CLASSES */
@@ -216,6 +259,9 @@
   /* Root Layout */
   .main-content {
     @apply remove-scrollbar h-full flex-1 overflow-auto bg-light-400 px-5 py-7 sm:mr-7 sm:rounded-[30px] md:mb-7 md:px-9 md:py-10 !important;
+  }
+  .dark .main-content {
+    @apply bg-dark-200 !important;
   }
 
   /* Dashboard */
@@ -227,6 +273,9 @@
   }
   .dashboard-summary-card {
     @apply relative mt-6 rounded-[20px] bg-white p-5 transition-all hover:scale-105 !important;
+  }
+  .dark .dashboard-summary-card {
+    @apply bg-dark-100 !important;
   }
   .summary-type-icon {
     @apply absolute -left-3 top-[-25px] z-10 w-[190px] object-contain !important;
@@ -240,14 +289,27 @@
   .dashboard-recent-files {
     @apply h-full rounded-[20px] bg-white p-5 xl:p-8 !important;
   }
+  .dark .dashboard-recent-files {
+    @apply bg-dark-100 !important;
+  }
   .recent-file-details {
     @apply flex w-full items-center justify-between gap-3 !important;
   }
   .recent-file-name {
     @apply subtitle-2 line-clamp-1 w-full text-light-100 max-w-[150px] sm:max-w-[200px] lg:max-w-[250px] !important;
   }
+  .dark .recent-file-name {
+    @apply text-white !important;
+  }
   .recent-file-date {
     @apply body-2 text-light-100/80 !important;
+  }
+  .dark .recent-file-date {
+    @apply text-white/80 !important;
+  }
+  .dark .dashboard-recent-files h2,
+  .dark .dashboard-recent-files h3 {
+    @apply text-white !important;
   }
   .empty-list {
     @apply body-1 mt-10 text-center text-light-200 !important;
@@ -271,22 +333,37 @@
   .rename-input-field {
     @apply body-2 shad-no-focus h-[52px] w-full rounded-full border px-4 shadow-drop-1 !important;
   }
+  .dark .rename-input-field {
+    @apply border-light-200/30 bg-dark-200/50 text-light-300 !important;
+  }
   .delete-confirmation {
     @apply text-center text-light-100 !important;
   }
   .delete-file-name {
     @apply font-medium text-brand-100 !important;
   }
+  .dark .delete-file-name {
+    @apply text-brand-dark !important;
+  }
   .modal-cancel-button {
     @apply h-[52px] flex-1 rounded-full bg-white text-light-100 hover:bg-transparent !important;
   }
+  .dark .modal-cancel-button {
+    @apply bg-dark-200 text-light-300 border border-light-200/20 hover:bg-dark-200/50 !important;
+  }
   .modal-submit-button {
     @apply primary-btn !mx-0 h-[52px] w-full flex-1 !important;
+  }
+  .dark .modal-submit-button {
+    @apply bg-brand-dark hover:bg-brand-dark/80 !important;
   }
 
   /* ActionsModalContent */
   .file-details-thumbnail {
     @apply !mb-1 flex items-center gap-3 rounded-xl border border-light-200/40 bg-light-400/50 p-3 max-w-full overflow-hidden !important;
+  }
+  .dark .file-details-thumbnail {
+    @apply border-light-200/30 bg-dark-200/50 !important;
   }
   .file-details-thumbnail .subtitle-2 {
     @apply truncate max-w-[250px] !important;
@@ -304,8 +381,14 @@
   .share-input-field {
     @apply body-2 shad-no-focus h-[52px] w-full rounded-full border px-4 shadow-drop-1 !important;
   }
+  .dark .share-input-field {
+    @apply border-light-200/30 bg-dark-200/50 text-light-300 !important;
+  }
   .share-remove-user {
     @apply rounded-full bg-transparent text-light-100 shadow-none hover:bg-transparent !important;
+  }
+  .dark .share-remove-user {
+    @apply text-light-300 hover:bg-light-200/10 !important;
   }
   .remove-icon {
     @apply aspect-square rounded-full !important;
@@ -318,30 +401,52 @@
   .form-title {
     @apply h1 text-center text-light-100 md:text-left !important;
   }
+  .dark .form-title {
+    @apply text-white !important;
+  }
   .form-submit-button {
     @apply primary-btn h-[66px] !important;
   }
+  .dark .form-submit-button {
+    @apply bg-brand-dark hover:bg-brand-dark/80 !important;
+  }
   .error-message {
     @apply body-2 mx-auto w-fit rounded-xl bg-error/5 px-8 py-4 text-center text-error !important;
+  }
+  /* Logo do BloomDrive no dark mode */
+  .auth-logo-dark {
+    filter: brightness(1.2) contrast(0.9);
   }
 
   /* Card */
   .file-card {
     @apply flex cursor-pointer flex-col gap-6 rounded-[18px] bg-white p-5 shadow-sm transition-all hover:shadow-drop-3 !important;
   }
+  .dark .file-card {
+    @apply bg-dark-200 border border-light-200/20 !important;
+  }
   .file-card-details {
     @apply flex flex-col gap-2 text-light-100 !important;
+  }
+  .dark .file-card-details {
+    @apply text-light-300 !important;
   }
 
   /* Chart */
   .chart {
     @apply flex items-center rounded-[20px] bg-brand p-5 text-white md:flex-col xl:flex-row !important;
   }
+  .dark .chart {
+    @apply bg-brand-dark !important;
+  }
   .chart-container {
     @apply mx-auto aspect-square w-[180px] text-white xl:w-[250px] !important;
   }
   .polar-grid {
     @apply first:fill-white/20 last:fill-brand !important;
+  }
+  .dark .polar-grid {
+    @apply last:fill-brand-dark !important;
   }
   .chart-details {
     @apply flex-1 items-start px-3 py-0 sm:px-5 lg:p-3 xl:pr-5 !important;
@@ -360,14 +465,24 @@
   .uploader-button {
     @apply primary-btn h-[52px] gap-2 px-10 shadow-drop-1 !important;
   }
+  .dark .uploader-button {
+    @apply bg-brand-dark hover:bg-brand-dark/80 !important;
+  }
   .uploader-preview-list {
     @apply fixed bottom-0 left-0 right-0 z-50 flex h-fit max-h-[80vh] w-full flex-col gap-3 rounded-t-[20px] bg-white p-4 shadow-drop-3 overflow-y-auto sm:bottom-10 sm:left-auto sm:right-10 sm:max-w-[480px] sm:rounded-[20px] sm:p-7 !important;
+  }
+  .dark .uploader-preview-list {
+    @apply bg-dark-200 border border-light-200/20 !important;
   }
   .uploader-preview-item {
     @apply flex items-start justify-between gap-2 rounded-xl p-2 shadow-drop-3 sm:items-center sm:gap-3 sm:p-3 !important;
   }
   .preview-item-name {
     @apply subtitle-2 mb-2 line-clamp-2 max-w-[200px] text-sm sm:line-clamp-1 sm:max-w-[300px] sm:text-base !important;
+  }
+  /* Ícone de remove no dark mode */
+  .dark img[src*="remove.svg"] {
+    filter: brightness(0) invert(1);
   }
 
   .error-toast {
@@ -392,17 +507,30 @@
   .header-user {
     @apply my-3 flex items-center gap-2 rounded-full p-1 text-light-100 sm:justify-center sm:bg-brand/10 lg:justify-start lg:p-3 transition-all duration-200 ease-in-out !important;
   }
+  .dark .header-user {
+    @apply text-light-300 sm:bg-light-200/10 !important;
+  }
   .header-user-avatar {
     @apply aspect-square w-10 rounded-full object-cover transition-all duration-200 ease-in-out !important;
   }
   .mobile-nav {
     @apply h5 flex-1 gap-1 text-brand transition-all duration-200 ease-in-out !important;
   }
+  .dark .mobile-nav {
+    @apply text-brand !important;
+  }
   .mobile-nav-list {
     @apply flex flex-1 flex-col gap-4 transition-all duration-200 ease-in-out !important;
   }
   .mobile-sign-out-button {
     @apply h5 flex h-[52px] w-full items-center gap-4 rounded-full bg-brand/10 px-6 text-brand shadow-none transition-all duration-200 ease-in-out hover:bg-brand/20 !important;
+  }
+  .dark .mobile-sign-out-button {
+    @apply bg-light-200/10 hover:bg-light-200/20 !important;
+  }
+  /* Ícone de menu no dark mode */
+  .dark .mobile-header img[src*="menu.svg"] {
+    filter: brightness(0) invert(1);
   }
 
   /* OTP Modal */
@@ -417,14 +545,24 @@
   .search-input-wrapper {
     @apply flex h-[52px] flex-1 items-center gap-3 rounded-full px-4 shadow-drop-3 !important;
   }
+  .dark .search-input-wrapper {
+    @apply bg-dark-200/50 border border-light-200/20 !important;
+  }
   .search-input {
     @apply body-2 shad-no-focus  placeholder:body-1 w-full border-none p-0 shadow-none placeholder:text-light-200 !important;
   }
   .search-result {
     @apply absolute left-0 top-16 z-50 flex w-full flex-col gap-3 rounded-[20px] bg-white p-4 !important;
   }
+  .dark .search-result {
+    @apply bg-dark-200 border border-light-200/20 !important;
+  }
   .empty-result {
     @apply body-2 text-center text-light-100 !important;
+  }
+  /* Ícone de search no dark mode */
+  .dark .search-input-wrapper img[src*="search.svg"] {
+    filter: brightness(0) invert(1);
   }
 
   /* Sidebar */
@@ -437,17 +575,32 @@
   .sidebar-nav-item {
     @apply flex text-light-100 gap-4 rounded-xl lg:w-full justify-center lg:justify-start items-center h5 lg:px-[30px] h-[52px] lg:rounded-full transition-all duration-200 ease-in-out !important;
   }
+  .dark .sidebar-nav-item {
+    @apply text-light-300 !important;
+  }
   .sidebar-nav-item:hover:not(.shad-active) {
     @apply bg-brand/10 !important;
+  }
+  .dark .sidebar-nav-item:hover:not(.shad-active) {
+    @apply bg-light-200/10 !important;
   }
   .mobile-nav-item {
     @apply flex text-light-100 gap-4 w-full justify-start items-center h5 px-6 h-[52px] rounded-full !important;
   }
+  .dark .mobile-nav-item {
+    @apply text-light-300 !important;
+  }
   .mobile-nav-item:hover:not(.shad-active) {
     @apply bg-brand/10 !important;
   }
+  .dark .mobile-nav-item:hover:not(.shad-active) {
+    @apply bg-light-200/10 !important;
+  }
   .sidebar-user-info {
     @apply mt-4 flex items-center justify-center gap-2 rounded-full bg-brand/10 p-1 text-light-100 lg:justify-start lg:p-3 transition-all duration-200 ease-in-out !important;
+  }
+  .dark .sidebar-user-info {
+    @apply bg-light-200/10 text-light-300 !important;
   }
   .sidebar-user-avatar {
     @apply aspect-square w-10 rounded-full object-cover !important;
@@ -456,13 +609,22 @@
   .shad-active {
     @apply bg-brand text-white shadow-drop-2 !important;
   }
+  .dark .shad-active {
+    @apply bg-brand-dark text-white !important;
+  }
   .shad-active:hover {
     @apply bg-brand text-white !important;
+  }
+  .dark .shad-active:hover {
+    @apply bg-brand-dark text-white !important;
   }
 
   /* Sort */
   .sort-select {
     @apply shad-no-focus h-11 w-full rounded-[8px] border-transparent bg-white !shadow-sm sm:w-[210px] !important;
+  }
+  .dark .sort-select {
+    @apply bg-dark-200 border-light-200/20 text-light-300 !important;
   }
   .sort-select-content {
     @apply !shadow-drop-3 !important;
@@ -474,6 +636,80 @@
   }
   .thumbnail-image {
     @apply size-full object-cover object-center !important;
+  }
+
+  /* Elementos de compartilhamento para dark mode */
+  .dark .bg-gray-50 {
+    @apply bg-dark-200/50 !important;
+  }
+
+  .dark .border-gray-200 {
+    @apply border-light-200/30 !important;
+  }
+
+  .dark .text-gray-600 {
+    @apply text-light-300 !important;
+  }
+
+  .dark .text-gray-500 {
+    @apply text-light-300/80 !important;
+  }
+
+  .dark .bg-red-50 {
+    @apply bg-red/10 !important;
+  }
+
+  .dark .border-red-200 {
+    @apply border-red/30 !important;
+  }
+
+  .dark .text-red-700 {
+    @apply text-red !important;
+  }
+
+  .dark .text-red-600 {
+    @apply text-red !important;
+  }
+
+  /* Hover específico para remoção de usuários */
+  .dark .hover\:bg-red-100:hover {
+    @apply bg-red/20 !important;
+  }
+
+  /* Botão adicionar usuário */
+  .add-user-button {
+    @apply bg-brand hover:bg-brand/90 text-white px-4 py-2 rounded-lg !important;
+  }
+  .dark .add-user-button {
+    @apply bg-brand-dark hover:bg-brand-dark/80 !important;
+  }
+  
+  /* Override para botões inline com bg-brand */
+  .dark .bg-brand:not(.chart):not(.shad-active) {
+    @apply bg-brand-dark !important;
+  }
+  
+  .dark .hover\:bg-brand\/90:hover:not(.chart):not(.shad-active) {
+    @apply bg-brand-dark/80 !important;
+  }
+
+  .theme-toggle-button {
+    @apply flex-center h-[52px] min-w-[54px] items-center rounded-full bg-brand/10 p-0 text-brand shadow-none transition-all hover:bg-brand/20 !important;
+  }
+  .dark .theme-toggle-button {
+    @apply bg-light-200/10 text-brand-dark hover:bg-light-200/20 !important;
+  }
+  .theme-toggle-button svg {
+    @apply text-inherit !important;
+  }
+  .dark .theme-toggle-button svg {
+    @apply text-brand-dark !important;
+    color: #4A8B5A !important;
+  }
+  /* Força cor específica para ícones do theme toggle no dark mode */
+  .dark .theme-toggle-button .lucide {
+    color: #4A8B5A !important;
+    stroke: #4A8B5A !important;
   }
 }
 

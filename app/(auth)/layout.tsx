@@ -1,19 +1,29 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
 import AuthChecker from "@/components/AuthChecker";
+import { SimpleThemeToggle } from "@/components/SimpleThemeToggle";
+import { useSimpleTheme } from "@/components/SimpleThemeProvider";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
+  const { isDark } = useSimpleTheme();
+
+  // Adiciona classe para filtro CSS no dark mode se necessário
+  const logoClassName = `h-auto ${isDark ? "auth-logo-dark" : ""}`.trim();
   return (
     <AuthChecker>
       <div className="flex min-h-screen">
-        <section className="hidden w-1/2 items-center justify-center bg-brand p-10 lg:flex xl:w-2/5">
+        <section className="hidden w-1/2 items-center justify-center bg-brand dark:bg-brand-dark p-10 lg:flex xl:w-2/5">
           <div className="flex max-h-[800px] max-w-[430px] flex-col justify-center space-y-12">
             <Image
               src="/assets/images/bloomdrive.png"
-              alt="logo"
+              alt="BloomDrive logo"
               width={300}
               height={82}
-              className="h-auto"
+              className={logoClassName}
+              suppressHydrationWarning={true}
+              priority
             />
 
             <div className="space-y-5 text-white">
@@ -32,14 +42,21 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           </div>
         </section>
 
-        <section className="flex flex-1 flex-col items-center bg-white p-4 py-10 lg:justify-center lg:p-10 lg:py-0">
+        <section className="flex flex-1 flex-col items-center bg-white dark:bg-dark-100 p-4 py-10 lg:justify-center lg:p-10 lg:py-0 relative">
+          {/* Theme Toggle */}
+          <div className="absolute top-4 right-4">
+            <SimpleThemeToggle />
+          </div>
+          
           <div className="mb-16 lg:hidden">
             <Image
               src="/assets/images/bloomdrive.png"
-              alt="logo"
+              alt="BloomDrive logo"
               width={224}
               height={82}
-              className="h-auto w-[200px] lg:w-[250px]"
+              className={`h-auto w-[200px] lg:w-[250px] ${isDark ? "auth-logo-dark" : ""}`.trim()}
+              suppressHydrationWarning={true}
+              priority
             />
           </div>
 

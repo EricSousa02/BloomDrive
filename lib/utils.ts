@@ -185,20 +185,22 @@ export const constructDownloadUrl = (bucketFileId: string) => {
 };
 
 // UTILITÁRIOS DO DASHBOARD
-export const getUsageSummary = (totalSpace: any) => {
+export const getUsageSummary = (totalSpace: any, isDark = false) => {
+  const iconSuffix = isDark ? "-dark" : "-light";
+  
   return [
     {
       title: "Documentos",
       size: totalSpace.document.size,
       latestDate: totalSpace.document.latestDate,
-      icon: "/assets/icons/file-document-light.svg",
+      icon: `/assets/icons/file-document${iconSuffix}.svg`,
       url: "/Documentos",
     },
     {
       title: "Imagens",
       size: totalSpace.image.size,
       latestDate: totalSpace.image.latestDate,
-      icon: "/assets/icons/file-image-light.svg",
+      icon: `/assets/icons/file-image${iconSuffix}.svg`,
       url: "/Imagens",
     },
     {
@@ -208,14 +210,14 @@ export const getUsageSummary = (totalSpace: any) => {
         totalSpace.video.latestDate > totalSpace.audio.latestDate
           ? totalSpace.video.latestDate
           : totalSpace.audio.latestDate,
-      icon: "/assets/icons/file-video-light.svg",
+      icon: `/assets/icons/file-video${iconSuffix}.svg`,
       url: "/Midia",
     },
     {
       title: "Outros",
       size: totalSpace.other.size,
       latestDate: totalSpace.other.latestDate,
-      icon: "/assets/icons/file-other-light.svg",
+      icon: `/assets/icons/file-other${iconSuffix}.svg`,
       url: "/Outros",
     },
   ];
