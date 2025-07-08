@@ -7,16 +7,8 @@ import { convertFileSize, constructSecureViewUrl, isFileViewable } from "@/lib/u
 import FormattedDateTime from "@/components/FormattedDateTime";
 import ActionDropdown from "@/components/ActionDropdown";
 import ClientOnly from "@/components/ClientOnly";
-import { useEffect, useState } from "react";
 
 const Card = ({ file }: { file: Models.Document }) => {
-  const [isMounted, setIsMounted] = useState(false);
-  
-  // Garante que o componente está montado no cliente
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   // Usa URL segura se o arquivo for visualizável, senão desabilita o link
   const isViewable = isFileViewable(file.extension);
   const viewUrl = isViewable ? constructSecureViewUrl(file.$id) : "#";
@@ -27,7 +19,8 @@ const Card = ({ file }: { file: Models.Document }) => {
         <Thumbnail
           type={file.type}
           extension={file.extension}
-          url={isMounted && isViewable ? constructSecureViewUrl(file.$id) : file.url}
+          url={file.url} // Sempre usa URL original para evitar hidratação inconsistente
+          size="medium"
           className="!size-20"
           imageClassName="!size-11"
         />
@@ -52,14 +45,6 @@ const Card = ({ file }: { file: Models.Document }) => {
       </div>
     </>
   );
-
-  if (!isMounted) {
-    return (
-      <div className="file-card cursor-default">
-        <CardContent />
-      </div>
-    );
-  }
 
   return isViewable ? (
     <Link href={viewUrl} target="_blank" className="file-card">

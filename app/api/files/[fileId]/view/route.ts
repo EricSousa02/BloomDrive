@@ -2,6 +2,7 @@ import { createAdminClient } from "@/lib/appwrite";
 import { appwriteConfig } from "@/lib/appwrite/config";
 import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/actions/user.actions";
+import { getCacheHeaders, isModified, createNotModifiedResponse } from "@/lib/cache-utils";
 
 export async function GET(
   request: NextRequest,
@@ -78,12 +79,6 @@ export async function GET(
       );
     }
 
-    // Busca o arquivo do storage
-    const fileBuffer = await storage.getFileView(
-      appwriteConfig.bucketId,
-      file.bucketFileId
-    );
-
     // Determina o Content-Type baseado na extensão
     const getContentType = (extension: string) => {
       const types: { [key: string]: string } = {
@@ -126,23 +121,37 @@ export async function GET(
 
     const contentType = getContentType(file.extension);
     
-    // Headers específicos para diferentes tipos de mídia
-    const headers: { [key: string]: string } = {
-      'Content-Type': contentType,
-      'Content-Disposition': `inline; filename="${file.name}"`,
-    };
-
-    // Para vídeos e áudios, adiciona suporte a range requests
-    if (contentType.startsWith('video/') || contentType.startsWith('audio/')) {
-      headers['Accept-Ranges'] = 'bytes';
-      headers['Cache-Control'] = 'public, max-age=3600'; // Cache menor para mídia
-    } else {
-      headers['Cache-Control'] = 'public, max-age=31536000, immutable';
+    // Gera headers de cache otimizados
+    const cacheHeaders = getCacheHeaders(contentType, file.bucketFileId, file.$updatedAt);
+    
+    // Verifica se o arquivo foi modificado
+    if (!isModified(request, cacheHeaders.ETag)) {
+      return createNotModifiedResponse(cacheHeaders.ETag, cacheHeaders['Cache-Control']);
     }
 
-    // Retorna o arquivo com headers apropriados
+    // Busca o arquivo do storage apenas se necessário
+    const fileBuffer = await storage.getFileView(
+      appwriteConfig.bucketId,
+      file.bucketFileId
+    );
+
+    // Headers finais da resposta
+    const responseHeaders: Record<string, string> = {
+      'Content-Type': contentType,
+      'Content-Disposition': `inline; filename="${file.name}"`,
+      'Content-Length': fileBuffer.byteLength.toString(),
+    };
+
+    // Adiciona headers de cache (filtrando undefined)
+    Object.entries(cacheHeaders).forEach(([key, value]) => {
+      if (value !== undefined) {
+        responseHeaders[key] = value;
+      }
+    });
+
+    // Retorna o arquivo com headers otimizados
     return new NextResponse(fileBuffer, {
-      headers,
+      headers: responseHeaders,
     });
 
   } catch (error) {

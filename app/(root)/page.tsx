@@ -43,6 +43,7 @@ const Dashboard = async () => {
                     type={file.type}
                     extension={file.extension}
                     url={file.url} // Use URL original para SSR, será atualizada no cliente
+                    size="small"
                   />
 
                   <div className="recent-file-details">

@@ -88,14 +88,30 @@ export async function GET(
 
     const downloadFilename = filename || file.name;
 
+    // Headers otimizados para download
+    const headers: { [key: string]: string } = {
+      'Content-Type': 'application/octet-stream',
+      'Content-Disposition': `attachment; filename="${downloadFilename}"`,
+      'Content-Length': fileBuffer.byteLength.toString(),
+      'Cache-Control': 'private, max-age=3600', // 1 hora para downloads
+      'X-Content-Type-Options': 'nosniff',
+      'ETag': `"download-${file.bucketFileId}-${file.$updatedAt}"`,
+    };
+
+    // Verifica ETag para evitar downloads desnecessários
+    const ifNoneMatch = request.headers.get('if-none-match');
+    if (ifNoneMatch && ifNoneMatch === headers['ETag']) {
+      return new NextResponse(null, {
+        status: 304,
+        headers: {
+          'Cache-Control': headers['Cache-Control'],
+          'ETag': headers['ETag'],
+        },
+      });
+    }
+
     // Retorna o arquivo para download
-    return new NextResponse(fileBuffer, {
-      headers: {
-        'Content-Type': 'application/octet-stream',
-        'Content-Disposition': `attachment; filename="${downloadFilename}"`,
-        'Content-Length': fileBuffer.byteLength.toString(),
-      },
-    });
+    return new NextResponse(fileBuffer, { headers });
 
   } catch (error) {
     console.error('Erro ao baixar arquivo:', error);
