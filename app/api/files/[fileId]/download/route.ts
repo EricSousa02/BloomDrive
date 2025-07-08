@@ -88,30 +88,28 @@ export async function GET(
 
     const downloadFilename = filename || file.name;
 
-    // Headers otimizados para download
+    // Headers que FORÇAM download para pasta Downloads do navegador
     const headers: { [key: string]: string } = {
-      'Content-Type': 'application/octet-stream',
-      'Content-Disposition': `attachment; filename="${downloadFilename}"`,
+      'Content-Type': 'application/octet-stream', // Força download em vez de abrir inline
+      'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(downloadFilename)}; filename="${downloadFilename}"`, // UTF-8 + fallback
       'Content-Length': fileBuffer.byteLength.toString(),
-      'Cache-Control': 'private, max-age=3600', // 1 hora para downloads
+      'Cache-Control': 'private, no-cache, no-store, must-revalidate', // Força sempre baixar novo
+      'Pragma': 'no-cache', // Compatibilidade com browsers antigos
+      'Expires': '0', // Expira imediatamente
       'X-Content-Type-Options': 'nosniff',
+      'Content-Transfer-Encoding': 'binary', // Indica que é arquivo binário
       'ETag': `"download-${file.bucketFileId}-${file.$updatedAt}"`,
     };
 
-    // Verifica ETag para evitar downloads desnecessários
-    const ifNoneMatch = request.headers.get('if-none-match');
-    if (ifNoneMatch && ifNoneMatch === headers['ETag']) {
-      return new NextResponse(null, {
-        status: 304,
-        headers: {
-          'Cache-Control': headers['Cache-Control'],
-          'ETag': headers['ETag'],
-        },
-      });
-    }
-
-    // Retorna o arquivo para download
-    return new NextResponse(fileBuffer, { headers });
+    // Para downloads, não verificamos ETag pois queremos sempre forçar o download
+    // (o usuário clicou para baixar, então deve baixar)
+    
+    // Retorna o arquivo FORÇANDO download para a pasta Downloads
+    return new NextResponse(fileBuffer, { 
+      headers,
+      // Status 200 com headers que forçam download
+      status: 200 
+    });
 
   } catch (error) {
     console.error('Erro ao baixar arquivo:', error);

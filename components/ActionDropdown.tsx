@@ -307,10 +307,12 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
               }}
             >
               {actionItem.value === "download" ? (
-                <Link
+                <a
                   href={constructSecureDownloadUrl(file.$id, file.name)}
                   download={file.name}
                   className="flex items-center gap-2"
+                  target="_self"
+                  rel="noopener noreferrer"
                 >
                   <Image
                     src={actionItem.icon}
@@ -319,7 +321,7 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
                     height={30}
                   />
                   {actionItem.label}
-                </Link>
+                </a>
               ) : (
                 <div className="flex items-center gap-2">
                   <Image
