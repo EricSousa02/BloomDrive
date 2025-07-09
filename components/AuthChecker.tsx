@@ -26,8 +26,10 @@ const AuthChecker = ({ children }: { children: React.ReactNode }) => {
         }, 3000); // 3 segundos máximo
         
         // Verifica se há cookie de sessão antes de fazer a requisição
-        const hasSessionCookie = document.cookie.includes('bloom-drive-session') || 
-                                document.cookie.includes('a_session_');
+        const hasSessionCookie = document.cookie.includes('bloom-drive-session');
+        
+        console.log('Todos os cookies:', document.cookie);
+        console.log('Cookie bloom-drive-session encontrado:', hasSessionCookie);
         
         if (!hasSessionCookie) {
           clearTimeout(timeoutId);
