@@ -84,10 +84,13 @@ const OtpModal = ({
       setIsRedirecting(true);
       setIsLoading(false);
       
-      // Força refresh da página para garantir que o servidor veja o cookie
+      // Limpa o flag de refresh para que o próximo acesso faça refresh
+      sessionStorage.removeItem('login-refreshed');
+      
+      // Redireciona para o dashboard
       setTimeout(() => {
-        console.log('🚀 OTP Modal - Forçando refresh da página...');
-        window.location.replace("/");
+        console.log('🚀 OTP Modal - Redirecionando para dashboard...');
+        window.location.href = "/";
       }, 1000);
     } catch (error) {
       console.log('❌ OTP Modal - Erro na verificação:', error);
