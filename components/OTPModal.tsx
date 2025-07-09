@@ -40,6 +40,7 @@ const OtpModal = ({
   const [isOpen, setIsOpen] = useState(true);
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [error, setError] = useState<string>("");
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -79,15 +80,20 @@ const OtpModal = ({
       console.log('✅ OTP Modal - Login bem-sucedido via API! SessionId:', data.sessionId);
       console.log('🍪 OTP Modal - Cookies após login:', document.cookie);
       
-      // Redirecionamento imediato com window.location para garantir o cookie
-      console.log('🚀 OTP Modal - Redirecionando para dashboard...');
-      window.location.href = "/";
+      // Mostra loading de redirecionamento
+      setIsRedirecting(true);
+      setIsLoading(false);
+      
+      // Redirecionamento com um pequeno delay para garantir que o cookie esteja disponível
+      setTimeout(() => {
+        console.log('🚀 OTP Modal - Redirecionando para dashboard...');
+        window.location.href = "/";
+      }, 1000);
     } catch (error) {
       console.log('❌ OTP Modal - Erro na verificação:', error);
       setError("Código OTP inválido. Verifique e tente novamente.");
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   const handleResendOtp = async () => {
@@ -163,8 +169,8 @@ const OtpModal = ({
               className="shad-submit-btn h-12"
               type="button"
             >
-              Enviar
-              {isLoading && (
+              {isRedirecting ? "Redirecionando..." : "Enviar"}
+              {(isLoading || isRedirecting) && (
                 <Image
                   src="/assets/icons/loader.svg"
                   alt="loader"

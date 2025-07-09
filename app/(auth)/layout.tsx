@@ -1,58 +1,21 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import AuthChecker from "@/components/AuthChecker";
 import { SimpleThemeToggle } from "@/components/SimpleThemeToggle";
 import { useSimpleTheme } from "@/components/SimpleThemeProvider";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const { isDark, isMounted } = useSimpleTheme();
-  const router = useRouter();
-  const [checkingAuth, setCheckingAuth] = useState(true);
 
-  useEffect(() => {
-    const checkIfLoggedIn = async () => {
-      console.log('🔍 Auth Layout - Iniciando verificação via API...');
-      
-      try {
-        // Usa a mesma API que o dashboard usa
-        const response = await fetch('/api/check-auth');
-        const { isAuthenticated, user } = await response.json();
-        
-        console.log('📡 Auth Layout - Resposta da API:', { isAuthenticated, user: !!user });
-
-        if (isAuthenticated && user) {
-          console.log('🚀 Auth Layout - Usuário autenticado, redirecionando...');
-          router.replace('/');
-        } else {
-          console.log('� Auth Layout - Usuário não autenticado, mostrando login');
-          setCheckingAuth(false);
-        }
-      } catch (error) {
-        console.log('❌ Auth Layout - Erro na verificação:', error);
-        // Se der erro na API, assume que não está logado
-        setCheckingAuth(false);
-      }
-    };
-
-    if (isMounted) {
-      console.log('🎬 Auth Layout - Componente montado, iniciando verificação');
-      checkIfLoggedIn();
-    }
-  }, [isMounted, router]);
-
-  // Loading enquanto verifica
-  if (checkingAuth || !isMounted) {
+  // Loading enquanto monta
+  if (!isMounted) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-white dark:bg-dark-100">
         <div className="flex flex-col items-center space-y-4">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand border-t-transparent"></div>
-          <p className="text-sm text-gray-600">Verificando autenticação...</p>
-          <p className="text-xs text-gray-400">
-            {!isMounted ? 'Montando componente...' : 'Aguardando cookies...'}
-          </p>
+          <p className="text-sm text-gray-600">Carregando...</p>
         </div>
       </div>
     );
