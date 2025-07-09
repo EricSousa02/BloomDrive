@@ -193,10 +193,51 @@ export const deleteFile = async ({
   }
 };
 
+export const leaveFileShare = async ({
+  fileId,
+  path,
+}: {
+  fileId: string;
+  path: string;
+}) => {
+  const { databases } = await createAdminClient();
+
+  try {
+    const currentUser = await getCurrentUser();
+    if (!currentUser) throw new Error("Usuário não autenticado.");
+
+    // Remove o usuário atual da lista de usuários compartilhados
+    const file = await databases.getDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.filesCollectionId,
+      fileId,
+    );
+
+    const updatedUsers = file.users.filter((email: string) => email !== currentUser.email);
+
+    const updatedFile = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.filesCollectionId,
+      fileId,
+      {
+        users: updatedUsers,
+      },
+    );
+
+    revalidatePath(path);
+    return parseStringify(updatedFile);
+  } catch (error) {
+    handleError(error, "Falha ao sair do compartilhamento do arquivo");
+  }
+};
+
 // ============================== TOTAL FILE SPACE USED
 export async function getTotalSpaceUsed() {
   try {
-    const { databases } = await createSessionClient();
+    const sessionClient = await createSessionClient();
+    if (!sessionClient) throw new Error("Falha ao criar cliente de sessão");
+    
+    const { databases } = sessionClient;
     const currentUser = await getCurrentUser();
     if (!currentUser) throw new Error("Usuário não autenticado.");
 
@@ -216,7 +257,7 @@ export async function getTotalSpaceUsed() {
       all: 2 * 1024 * 1024 * 1024 /* 2GB available bucket storage */,
     };
 
-    files.documents.forEach((file) => {
+    files.documents.forEach((file: Models.Document) => {
       const fileType = file.type as FileType;
       totalSpace[fileType].size += file.size;
       totalSpace.used += file.size;
