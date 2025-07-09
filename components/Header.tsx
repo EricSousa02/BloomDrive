@@ -4,7 +4,7 @@ import Image from "next/image";
 import Search from "@/components/Search";
 import FileUploader from "@/components/FileUploader";
 import { SimpleThemeToggle } from "@/components/SimpleThemeToggle";
-import { handleSignOut } from "@/lib/actions/user.actions";
+import { signOutUser } from "@/lib/actions/user.actions";
 
 const Header = ({
   userId,
@@ -19,7 +19,13 @@ const Header = ({
       <div className="header-wrapper">
         <FileUploader ownerId={userId} accountId={accountId} />
         <SimpleThemeToggle />
-        <form action={handleSignOut}>
+        <form
+          action={async () => {
+            "use server";
+
+            await signOutUser();
+          }}
+        >
           <Button type="submit" className="sign-out-button">
             <Image
               src="/assets/icons/logout.svg"
