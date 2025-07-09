@@ -17,7 +17,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       console.log('🔍 Auth Layout - Iniciando verificação de cookies...');
       
       // Aguarda um tempo para o cookie estar disponível (especialmente na Vercel)
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 10000));
       
       const allCookies = document.cookie;
       console.log('🍪 Auth Layout - Todos os cookies:', allCookies);
