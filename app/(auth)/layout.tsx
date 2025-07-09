@@ -7,10 +7,11 @@ import { SimpleThemeToggle } from "@/components/SimpleThemeToggle";
 import { useSimpleTheme } from "@/components/SimpleThemeProvider";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const { isDark } = useSimpleTheme();
+  const { isDark, isMounted } = useSimpleTheme();
 
   // Adiciona classe para filtro CSS no dark mode se necessário
-  const logoClassName = `h-auto ${isDark ? "auth-logo-dark" : ""}`.trim();
+  // Só aplica quando está montado para evitar hidratação
+  const logoClassName = `h-auto ${isMounted && isDark ? "auth-logo-dark" : ""}`.trim();
   return (
     <AuthChecker>
       <div className="flex min-h-screen">
@@ -54,7 +55,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               alt="BloomDrive logo"
               width={224}
               height={82}
-              className={`h-auto w-[200px] lg:w-[250px] ${isDark ? "auth-logo-dark" : ""}`.trim()}
+              className={`h-auto w-[200px] lg:w-[250px] ${isMounted && isDark ? "auth-logo-dark" : ""}`.trim()}
               suppressHydrationWarning={true}
               priority
             />
