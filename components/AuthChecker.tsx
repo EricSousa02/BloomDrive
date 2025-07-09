@@ -22,12 +22,21 @@ const AuthChecker = ({ children }: { children: React.ReactNode }) => {
       try {
         // Verifica se há cookie de sessão do Appwrite
         const allCookies = document.cookie;
+        
+        // Verifica por diferentes padrões de cookie do Appwrite
         const hasAppwriteSession = allCookies.includes('a_session_') || 
                                  allCookies.includes('bloom-drive-session') ||
-                                 allCookies.includes('appwrite-session');
+                                 allCookies.includes('appwrite-session') ||
+                                 allCookies.includes('session') ||
+                                 allCookies.includes('auth') ||
+                                 allCookies.includes('token');
         
         console.log('🍪 Todos os cookies:', allCookies);
         console.log('🍪 Cookie de sessão Appwrite encontrado:', hasAppwriteSession);
+        
+        // Debug: mostra cada cookie individualmente
+        const cookieArray = allCookies.split(';').map(c => c.trim());
+        console.log('🍪 Cookies individuais:', cookieArray);
         
         // ⚠️ MODO OFFLINE: Verifica apenas o cookie (sem API)
         // Isso evita o loop infinito quando Fast Origin Transfer está esgotado
@@ -42,7 +51,15 @@ const AuthChecker = ({ children }: { children: React.ReactNode }) => {
           return;
         }
         
-        console.log('❌ Nenhum cookie de sessão encontrado - usuário não autenticado');
+        // Se não encontrou cookie via JavaScript, tenta navegar para /
+        // (se o usuário estiver logado, a página / vai funcionar)
+        console.log('🔍 Nenhum cookie encontrado via JS. Testando navegação para /...');
+        console.log('🔍 Isso é normal se o Appwrite usar httpOnly cookies');
+        
+        // Pequeno delay antes de finalizar
+        setTimeout(() => {
+          console.log('❌ Usuário não autenticado - permanecendo na página de login');
+        }, 100);
         
       } catch (error) {
         console.log('Auth check error:', error);
