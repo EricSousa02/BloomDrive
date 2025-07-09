@@ -14,13 +14,11 @@ export function middleware(request: NextRequest) {
 
   // Se é uma rota protegida e não tem sessão, redireciona para login
   if (isProtectedRoute && !sessionCookie) {
-    console.log('🔐 Middleware - Rota protegida sem sessão, redirecionando para login');
     return NextResponse.redirect(new URL('/sign-in', request.url));
   }
 
   // Se é uma rota de auth e tem sessão, redireciona para dashboard
   if (isAuthRoute && sessionCookie) {
-    console.log('🔐 Middleware - Rota de auth com sessão, redirecionando para dashboard');
     return NextResponse.redirect(new URL('/', request.url));
   }
 

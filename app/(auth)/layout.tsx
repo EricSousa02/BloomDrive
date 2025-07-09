@@ -16,7 +16,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       const hasRefreshedBefore = sessionStorage.getItem('login-refreshed');
       
       if (!hasRefreshedBefore) {
-        console.log('🔄 Auth Layout - Forçando refresh para que a Vercel veja os cookies...');
         sessionStorage.setItem('login-refreshed', 'true');
         window.location.reload();
         return;

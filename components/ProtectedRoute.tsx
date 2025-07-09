@@ -15,22 +15,15 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        console.log('🔍 ProtectedRoute - Verificando autenticação...');
-        
         const response = await fetch('/api/check-auth');
         const { isAuthenticated: authStatus } = await response.json();
         
-        console.log('📡 ProtectedRoute - Status de autenticação:', authStatus);
-        
         if (!authStatus) {
-          console.log('🚫 ProtectedRoute - Não autenticado, redirecionando...');
           router.replace('/sign-in');
         } else {
-          console.log('✅ ProtectedRoute - Autenticado, exibindo conteúdo');
           setIsAuthenticated(true);
         }
       } catch (error) {
-        console.log('❌ ProtectedRoute - Erro na verificação:', error);
         router.replace('/sign-in');
       } finally {
         setIsLoading(false);

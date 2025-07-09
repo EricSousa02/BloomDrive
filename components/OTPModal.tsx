@@ -60,8 +60,6 @@ const OtpModal = ({
     }
 
     try {
-      console.log('🔐 OTP Modal - Verificando código via API...');
-      
       // Chama diretamente a API route do client-side
       const response = await fetch('/api/auth/verify', {
         method: 'POST',
@@ -77,8 +75,6 @@ const OtpModal = ({
       }
 
       const data = await response.json();
-      console.log('✅ OTP Modal - Login bem-sucedido via API! SessionId:', data.sessionId);
-      console.log('🍪 OTP Modal - Cookies após login:', document.cookie);
       
       // Mostra loading de redirecionamento
       setIsRedirecting(true);
@@ -89,11 +85,9 @@ const OtpModal = ({
       
       // Redireciona para o dashboard
       setTimeout(() => {
-        console.log('🚀 OTP Modal - Redirecionando para dashboard...');
         window.location.href = "/";
       }, 1000);
     } catch (error) {
-      console.log('❌ OTP Modal - Erro na verificação:', error);
       setError("Código OTP inválido. Verifique e tente novamente.");
       setIsLoading(false);
     }

@@ -75,12 +75,8 @@ export const verifySecret = async ({
   password: string;
 }) => {
   try {
-    console.log('🔐 verifySecret - Iniciando verificação para accountId:', accountId?.substring(0, 8) + '...');
-    
     const { account } = await createAdminClient();
     const session = await account.createSession(accountId, password);
-    
-    console.log('✅ verifySecret - Sessão criada:', session.$id);
 
     // Usar headers() do next/headers para setar o cookie no response
     const cookieStore = await cookies();
@@ -92,10 +88,8 @@ export const verifySecret = async ({
       maxAge: 60 * 60 * 24 * 30, // 30 dias em segundos
     });
 
-    console.log('🍪 verifySecret - Cookie setado com sucesso');
     return parseStringify({ sessionId: session.$id });
   } catch (error) {
-    console.log('❌ verifySecret - Erro:', error);
     handleError(error, "Falha ao verificar OTP");
   }
 };
