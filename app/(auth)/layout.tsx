@@ -1,17 +1,50 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import AuthChecker from "@/components/AuthChecker";
 import { SimpleThemeToggle } from "@/components/SimpleThemeToggle";
 import { useSimpleTheme } from "@/components/SimpleThemeProvider";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const { isDark, isMounted } = useSimpleTheme();
+  const router = useRouter();
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    const checkIfLoggedIn = async () => {
+      // Verifica se há cookie de sessão
+      const allCookies = document.cookie;
+      const hasSession = allCookies.includes('bloom-drive-session') || 
+                        allCookies.includes('a_session_');
+
+      if (hasSession) {
+        // Se tem cookie, redireciona para dashboard
+        router.replace('/');
+      } else {
+        // Se não tem cookie, pode mostrar o layout de auth
+        setCheckingAuth(false);
+      }
+    };
+
+    if (isMounted) {
+      checkIfLoggedIn();
+    }
+  }, [isMounted, router]);
+
+  // Loading enquanto verifica
+  if (checkingAuth || !isMounted) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white dark:bg-dark-100">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand border-t-transparent"></div>
+      </div>
+    );
+  }
 
   // Adiciona classe para filtro CSS no dark mode se necessário
-  // Só aplica quando está montado para evitar hidratação
   const logoClassName = `h-auto ${isMounted && isDark ? "auth-logo-dark" : ""}`.trim();
+  
   return (
     <AuthChecker>
       <div className="flex min-h-screen">
