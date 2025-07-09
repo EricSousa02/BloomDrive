@@ -14,24 +14,25 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const checkIfLoggedIn = async () => {
-      console.log('🔍 Auth Layout - Iniciando verificação de cookies...');
+      console.log('🔍 Auth Layout - Iniciando verificação via API...');
       
-      // Aguarda um tempo para o cookie estar disponível (especialmente na Vercel)
-      await new Promise(resolve => setTimeout(resolve, 10000));
-      
-      const allCookies = document.cookie;
-      console.log('🍪 Auth Layout - Todos os cookies:', allCookies);
-      
-      const hasSession = allCookies.includes('bloom-drive-session') || 
-                        allCookies.includes('a_session_');
-      
-      console.log('✅ Auth Layout - Tem sessão?', hasSession);
+      try {
+        // Usa a mesma API que o dashboard usa
+        const response = await fetch('/api/check-auth');
+        const { isAuthenticated, user } = await response.json();
+        
+        console.log('📡 Auth Layout - Resposta da API:', { isAuthenticated, user: !!user });
 
-      if (hasSession) {
-        console.log('🚀 Auth Layout - Redirecionando para dashboard...');
-        router.replace('/');
-      } else {
-        console.log('📋 Auth Layout - Mostrando tela de login');
+        if (isAuthenticated && user) {
+          console.log('🚀 Auth Layout - Usuário autenticado, redirecionando...');
+          router.replace('/');
+        } else {
+          console.log('� Auth Layout - Usuário não autenticado, mostrando login');
+          setCheckingAuth(false);
+        }
+      } catch (error) {
+        console.log('❌ Auth Layout - Erro na verificação:', error);
+        // Se der erro na API, assume que não está logado
         setCheckingAuth(false);
       }
     };
