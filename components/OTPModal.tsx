@@ -58,15 +58,12 @@ const OtpModal = ({
       }
     }
 
-    console.log({ accountId, password });
-
     try {
       const sessionId = await verifySecret({ accountId, password });
 
-      console.log({ sessionId });
-
       if (sessionId) {
-        router.push("/");
+        // Força um redirecionamento completo para garantir que o cookie seja reconhecido
+        window.location.href = "/";
       } else {
         setError("Código OTP inválido. Verifique e tente novamente.");
       }

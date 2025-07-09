@@ -76,19 +76,22 @@ export const verifySecret = async ({
   password: string;
 }) => {
   try {
-    const { account } = await createAdminClient();
-
-    const session = await account.createSession(accountId, password);
-
-    (await cookies()).set("bloom-drive-session", session.secret, {
-      path: "/",
-      httpOnly: true,
-      sameSite: "strict",
-      secure: true,
-      maxAge: 60 * 60 * 24 * 30, // 30 dias em segundos | esse é o tempo que o cookie será mantido
+    // Usar API route para garantir que o cookie seja setado corretamente
+    const response = await fetch('/api/auth/verify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ accountId, password }),
     });
 
-    return parseStringify({ sessionId: session.$id });
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Falha ao verificar OTP');
+    }
+
+    return parseStringify({ sessionId: result.sessionId });
   } catch (error) {
     handleError(error, "Falha ao verificar OTP");
   }
@@ -100,35 +103,26 @@ export const getCurrentUser = async () => {
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get('bloom-drive-session');
     
-    console.log('getCurrentUser: sessionCookie exists:', !!sessionCookie);
-    
     if (!sessionCookie) {
-      console.log('getCurrentUser: No session cookie found');
       return null;
     }
     
-    console.log('getCurrentUser: Creating session client...');
     const sessionClient = await createSessionClient();
     
     // Se não conseguiu criar o cliente (sem sessão), retorna null
     if (!sessionClient) {
-      console.log('getCurrentUser: Failed to create session client');
       return null;
     }
     
-    console.log('getCurrentUser: Getting account...');
     const { databases, account } = sessionClient;
 
     const result = await account.get();
-    console.log('getCurrentUser: Account found:', !!result);
 
     const user = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.usersCollectionId,
       [Query.equal("accountId", result.$id)],
     );
-
-    console.log('getCurrentUser: User documents found:', user.total);
 
     if (user.total <= 0) return null;
 
@@ -142,19 +136,25 @@ export const getCurrentUser = async () => {
 
 export const signOutUser = async () => {
   try {
-    const sessionClient = await createSessionClient();
-    
-    if (sessionClient) {
-      const { account } = sessionClient;
-      await account.deleteSession("current");
-    }
-    
-    (await cookies()).delete("bloom-drive-session");
+    // Usar API route para garantir que o cookie seja removido corretamente
+    await fetch('/api/auth/logout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   } catch (error) {
-    handleError(error, "Falha ao sair do usuário");
+    // Silencioso - mesmo com erro, redireciona
+    console.log("Erro no logout:", error);
   } finally {
     redirect("/sign-in");
   }
+};
+
+// Server action separada para ser usada em forms
+export const handleSignOut = async () => {
+  "use server";
+  await signOutUser();
 };
 
 export const signInUser = async ({ email }: { email: string }) => {
