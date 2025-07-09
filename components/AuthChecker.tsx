@@ -22,21 +22,12 @@ const AuthChecker = ({ children }: { children: React.ReactNode }) => {
       try {
         // Verifica se há cookie de sessão do Appwrite
         const allCookies = document.cookie;
-        
-        // Verifica por diferentes padrões de cookie do Appwrite
         const hasAppwriteSession = allCookies.includes('a_session_') || 
                                  allCookies.includes('bloom-drive-session') ||
-                                 allCookies.includes('appwrite-session') ||
-                                 allCookies.includes('session') ||
-                                 allCookies.includes('auth') ||
-                                 allCookies.includes('token');
+                                 allCookies.includes('appwrite-session');
         
         console.log('🍪 Todos os cookies:', allCookies);
         console.log('🍪 Cookie de sessão Appwrite encontrado:', hasAppwriteSession);
-        
-        // Debug: mostra cada cookie individualmente
-        const cookieArray = allCookies.split(';').map(c => c.trim());
-        console.log('🍪 Cookies individuais:', cookieArray);
         
         // ⚠️ MODO OFFLINE: Verifica apenas o cookie (sem API)
         // Isso evita o loop infinito quando Fast Origin Transfer está esgotado
@@ -51,12 +42,7 @@ const AuthChecker = ({ children }: { children: React.ReactNode }) => {
           return;
         }
         
-        // Se não encontrou cookie via JavaScript, permanece na página de login
-        // Não tenta redirecionar para evitar loop infinito
-        console.log('🔍 Nenhum cookie encontrado via JS');
-        console.log('🔍 Permanecendo na página de login (modo seguro)');
-        
-        // Não redireciona - deixa o usuário na página de login
+        console.log('❌ Nenhum cookie de sessão encontrado - usuário não autenticado');
         
       } catch (error) {
         console.log('Auth check error:', error);

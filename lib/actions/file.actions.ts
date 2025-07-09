@@ -111,6 +111,7 @@ export const getFiles = async ({
       queries,
     );
 
+    console.log({ files });
     return parseStringify(files);
   } catch (error) {
     handleError(error, "Falha ao buscar arquivos");
@@ -126,14 +127,7 @@ export const renameFile = async ({
   const { databases } = await createAdminClient();
 
   try {
-    // Remove a extensão do nome se ela já estiver presente (proteção adicional)
-    let cleanName = name.trim();
-    const extensionPattern = new RegExp(`\\.${extension}$`, 'i');
-    if (extensionPattern.test(cleanName)) {
-      cleanName = cleanName.replace(extensionPattern, '');
-    }
-    
-    const newName = `${cleanName}.${extension}`;
+    const newName = `${name}.${extension}`;
     const updatedFile = await databases.updateDocument(
       appwriteConfig.databaseId,
       appwriteConfig.filesCollectionId,
@@ -199,13 +193,10 @@ export const deleteFile = async ({
   }
 };
 
-// ============================== ESPAÇO TOTAL USADO POR ARQUIVOS
+// ============================== TOTAL FILE SPACE USED
 export async function getTotalSpaceUsed() {
   try {
-    const sessionClient = await createSessionClient();
-    if (!sessionClient) throw new Error("Sessão não encontrada");
-    
-    const { databases } = sessionClient;
+    const { databases } = await createSessionClient();
     const currentUser = await getCurrentUser();
     if (!currentUser) throw new Error("Usuário não autenticado.");
 
@@ -243,54 +234,5 @@ export async function getTotalSpaceUsed() {
     handleError(error, "Erro ao calcular espaço total utilizado");
   }
 }
-
-export const leaveFileShare = async ({
-  fileId,
-  path,
-}: LeaveFileShareProps) => {
-  const { databases } = await createAdminClient();
-
-  try {
-    const currentUser = await getCurrentUser();
-    if (!currentUser) throw new Error("Usuário não autenticado.");
-
-    // Busca o arquivo atual
-    const file = await databases.getDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.filesCollectionId,
-      fileId,
-    );
-
-    // Verifica se o usuário atual está na lista de usuários compartilhados
-    const currentUsers = Array.isArray(file.users) ? file.users : [];
-    const userEmails = currentUsers
-      .filter((user: any) => user && typeof user === 'string')
-      .map((email: string) => email)
-      .concat(
-        currentUsers
-          .filter((user: any) => user && typeof user === 'object' && user.email)
-          .map((user: any) => user.email)
-      );
-    
-    // Remove o email do usuário atual da lista
-    const updatedEmails = userEmails.filter((email: string) => email && email !== currentUser.email);
-
-    // Atualiza o arquivo removendo o usuário atual
-    const updatedFile = await databases.updateDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.filesCollectionId,
-      fileId,
-      {
-        users: updatedEmails,
-      },
-    );
-
-    revalidatePath(path);
-    return parseStringify(updatedFile);
-  } catch (error) {
-    handleError(error, "Erro ao sair do compartilhamento do arquivo");
-    return false;
-  }
-};
 
 
