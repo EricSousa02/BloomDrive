@@ -81,7 +81,7 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
           }
         }
       } catch (error) {
-        console.error('Erro ao buscar usuário atual:', error);
+        // Erro silencioso - usuário não autenticado
       } finally {
         setIsUserLoaded(true);
       }

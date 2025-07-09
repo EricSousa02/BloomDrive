@@ -21,7 +21,6 @@ const getUserByEmail = async (email: string) => {
 };
 
 const handleError = (error: unknown, message: string) => {
-  console.log(error, message);
   throw error;
 };
 
@@ -96,31 +95,14 @@ export const verifySecret = async ({
 
 export const getCurrentUser = async () => {
   try {
-    // Verifica se há cookie de sessão primeiro
-    const cookieStore = await cookies();
-    const sessionCookie = cookieStore.get('bloom-drive-session');
-    
-    console.log('getCurrentUser: sessionCookie exists:', !!sessionCookie);
-    
-    if (!sessionCookie) {
-      console.log('getCurrentUser: No session cookie found');
-      return null;
-    }
-    
-    console.log('getCurrentUser: Creating session client...');
     const sessionClient = await createSessionClient();
     
-    // Se não conseguiu criar o cliente (sem sessão), retorna null
     if (!sessionClient) {
-      console.log('getCurrentUser: Failed to create session client');
       return null;
     }
     
-    console.log('getCurrentUser: Getting account...');
     const { databases, account } = sessionClient;
-
     const result = await account.get();
-    console.log('getCurrentUser: Account found:', !!result);
 
     const user = await databases.listDocuments(
       appwriteConfig.databaseId,
@@ -128,14 +110,10 @@ export const getCurrentUser = async () => {
       [Query.equal("accountId", result.$id)],
     );
 
-    console.log('getCurrentUser: User documents found:', user.total);
-
     if (user.total <= 0) return null;
 
     return parseStringify(user.documents[0]);
   } catch (error) {
-    // Log apenas para debug, não quebra a aplicação
-    console.log('getCurrentUser error:', error);
     return null;
   }
 };

@@ -112,7 +112,6 @@ const AuthForm = ({ type }: { type: FormType }) => {
         setErrorMessage("Falha ao processar solicitação. Tente novamente.");
       }
     } catch (error) {
-      console.error("Erro no formulário:", error);
       if (error instanceof z.ZodError) {
         setErrorMessage(error.errors[0].message);
       } else {

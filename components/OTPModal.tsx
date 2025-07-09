@@ -58,12 +58,8 @@ const OtpModal = ({
       }
     }
 
-    console.log({ accountId, password });
-
     try {
       const sessionId = await verifySecret({ accountId, password });
-
-      console.log({ sessionId });
 
       if (sessionId) {
         router.push("/");
@@ -71,7 +67,6 @@ const OtpModal = ({
         setError("Código OTP inválido. Verifique e tente novamente.");
       }
     } catch (error) {
-      console.log("Failed to verify OTP", error);
       setError("Código OTP inválido. Verifique e tente novamente.");
     }
 
