@@ -25,20 +25,20 @@ const AuthChecker = ({ children }: { children: React.ReactNode }) => {
           setIsChecking(false);
         }, 3000); // 3 segundos máximo
         
-        // Verifica se há cookie de sessão antes de fazer a requisição
-        const hasSessionCookie = document.cookie.includes('bloom-drive-session');
+        // Verifica se há cookie de sessão do Appwrite
+        const allCookies = document.cookie;
+        const hasAppwriteSession = allCookies.includes('a_session_') || 
+                                 allCookies.includes('bloom-drive-session') ||
+                                 allCookies.includes('appwrite-session');
         
-        console.log('Todos os cookies:', document.cookie);
-        console.log('Cookie bloom-drive-session encontrado:', hasSessionCookie);
+        console.log('Todos os cookies:', allCookies);
+        console.log('Cookie de sessão Appwrite encontrado:', hasAppwriteSession);
         
-        if (!hasSessionCookie) {
-          clearTimeout(timeoutId);
-          setIsChecking(false);
-          console.log('Nenhum cookie de sessão encontrado, usuário não autenticado');
-          return;
-        }
-        
-        console.log('Cookie de sessão encontrado, verificando autenticação...');
+        // Sempre tenta verificar com a API, mesmo sem cookie visível
+        // (o Appwrite pode usar httpOnly cookies)
+        console.log('🔍 Verificando autenticação com API...');
+        console.log('🔍 URL atual:', window.location.href);
+        console.log('🔍 Pathname:', window.location.pathname);
         
         const response = await fetch('/api/check-auth', {
           method: 'GET',
@@ -48,25 +48,35 @@ const AuthChecker = ({ children }: { children: React.ReactNode }) => {
           }
         });
         
+        console.log('📡 Response received, status:', response.status);
+        console.log('📡 Response OK:', response.ok);
+        
         clearTimeout(timeoutId);
         
         if (response.ok) {
           const data = await response.json();
-          console.log('Resposta da API de auth:', data);
+          console.log('✅ Resposta da API de auth:', data);
+          console.log('✅ Status da resposta:', response.status);
+          console.log('✅ Headers da resposta:', Object.fromEntries(response.headers.entries()));
           
-          if (data.isAuthenticated) {
-            // Redireciona para a página principal
-            console.log('Usuário autenticado, redirecionando para /');
+          // Debug mais detalhado
+          console.log('✅ data.isAuthenticated:', data.isAuthenticated);
+          console.log('✅ Tipo de data.isAuthenticated:', typeof data.isAuthenticated);
+          
+          if (data.isAuthenticated === true) {
+            console.log('🎉 Usuário autenticado! Redirecionando para /');
             setIsRedirecting(true);
             
-            // Aguarda um pouco para mostrar o loading de redirecionamento
-            setTimeout(() => {
-              router.replace('/');
-            }, 500);
+            // Redireciona imediatamente - sem delay
+            router.replace('/');
             return;
+          } else {
+            console.log('❌ Usuário NÃO autenticado. data.isAuthenticated =', data.isAuthenticated);
           }
         } else {
-          console.log('Erro na resposta da API de auth:', response.status);
+          console.log('❌ Erro na resposta da API de auth:', response.status);
+          const errorText = await response.text();
+          console.log('❌ Texto do erro:', errorText);
         }
         
         // Se chegou aqui, usuário não está autenticado
