@@ -51,15 +51,18 @@ const AuthChecker = ({ children }: { children: React.ReactNode }) => {
           return;
         }
         
-        // Se não encontrou cookie via JavaScript, tenta navegar para /
-        // (se o usuário estiver logado, a página / vai funcionar)
-        console.log('🔍 Nenhum cookie encontrado via JS. Testando navegação para /...');
-        console.log('🔍 Isso é normal se o Appwrite usar httpOnly cookies');
+        // Se não encontrou cookie via JavaScript, pode ser httpOnly
+        // Vamos tentar navegar para / de qualquer forma
+        console.log('🔍 Nenhum cookie encontrado via JS ou cookies httpOnly');
+        console.log('🔍 Tentando navegar para / (modo degradado)');
         
-        // Pequeno delay antes de finalizar
+        // Modo degradado: sempre tenta ir para / quando Fast Origin Transfer está esgotado
+        // A página / agora é client-side e vai lidar com erros de auth graciosamente
+        setIsRedirecting(true);
+        
         setTimeout(() => {
-          console.log('❌ Usuário não autenticado - permanecendo na página de login');
-        }, 100);
+          router.replace('/');
+        }, 500);
         
       } catch (error) {
         console.log('Auth check error:', error);

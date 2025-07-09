@@ -1,6 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Models } from "node-appwrite";
+import { useEffect, useState } from "react";
 
 import ActionDropdown from "@/components/ActionDropdown";
 import { Chart } from "@/components/Chart";
@@ -12,12 +15,77 @@ import { convertFileSize, constructSecureViewUrl, isFileViewable } from "@/lib/u
 import ClientOnly from "@/components/ClientOnly";
 import { DashboardSummary } from "@/components/DashboardSummary";
 
-const Dashboard = async () => {
-  // Requisições paralelas
-  const [files, totalSpace] = await Promise.all([
-    getFiles({ types: [], limit: 10 }),
-    getTotalSpaceUsed(),
-  ]);
+const Dashboard = () => {
+  const [files, setFiles] = useState<any>(null);
+  const [totalSpace, setTotalSpace] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        // Requisições paralelas
+        const [filesData, totalSpaceData] = await Promise.all([
+          getFiles({ types: [], limit: 10 }),
+          getTotalSpaceUsed(),
+        ]);
+        
+        setFiles(filesData);
+        setTotalSpace(totalSpaceData);
+      } catch (err) {
+        console.error('Erro ao carregar dados:', err);
+        setError('Erro ao carregar dados. Tente novamente.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="dashboard-container">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex flex-col items-center space-y-4">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand border-t-transparent"></div>
+            <p className="text-gray-600">Carregando dashboard...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="dashboard-container">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex flex-col items-center space-y-4">
+            <p className="text-red-600">{error}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="px-4 py-2 bg-brand text-white rounded hover:bg-brand/90"
+            >
+              Tentar novamente
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!files || !totalSpace) {
+    return (
+      <div className="dashboard-container">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <p className="text-gray-600">Nenhum dado disponível</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-container">
