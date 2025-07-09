@@ -75,20 +75,25 @@ export const verifySecret = async ({
   password: string;
 }) => {
   try {
+    console.log('🔐 verifySecret - Iniciando verificação para accountId:', accountId?.substring(0, 8) + '...');
+    
     const { account } = await createAdminClient();
-
     const session = await account.createSession(accountId, password);
+    
+    console.log('✅ verifySecret - Sessão criada:', session.$id);
 
     (await cookies()).set("bloom-drive-session", session.secret, {
       path: "/",
       httpOnly: true,
       sameSite: "strict",
-      secure: true,
-      maxAge: 60 * 60 * 24 * 30, // 30 dias em segundos | esse é o tempo que o cookie será mantido
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24 * 30, // 30 dias em segundos
     });
 
+    console.log('🍪 verifySecret - Cookie setado com sucesso');
     return parseStringify({ sessionId: session.$id });
   } catch (error) {
+    console.log('❌ verifySecret - Erro:', error);
     handleError(error, "Falha ao verificar OTP");
   }
 };

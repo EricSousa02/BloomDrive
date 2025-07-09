@@ -59,14 +59,24 @@ const OtpModal = ({
     }
 
     try {
+      console.log('🔐 OTP Modal - Verificando código...');
       const sessionId = await verifySecret({ accountId, password });
 
       if (sessionId) {
-        router.push("/");
+        console.log('✅ OTP Modal - Login bem-sucedido! SessionId:', sessionId);
+        console.log('🍪 OTP Modal - Cookies após login:', document.cookie);
+        
+        // Aguarda um pouco para o cookie estar disponível
+        setTimeout(() => {
+          console.log('🚀 OTP Modal - Redirecionando para dashboard...');
+          router.push("/");
+        }, 500);
       } else {
+        console.log('❌ OTP Modal - SessionId não retornado');
         setError("Código OTP inválido. Verifique e tente novamente.");
       }
     } catch (error) {
+      console.log('❌ OTP Modal - Erro na verificação:', error);
       setError("Código OTP inválido. Verifique e tente novamente.");
     }
 

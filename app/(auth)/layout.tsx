@@ -14,21 +14,30 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const checkIfLoggedIn = async () => {
-      // Verifica se há cookie de sessão
+      console.log('🔍 Auth Layout - Iniciando verificação de cookies...');
+      
+      // Aguarda um tempo para o cookie estar disponível (especialmente na Vercel)
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       const allCookies = document.cookie;
+      console.log('🍪 Auth Layout - Todos os cookies:', allCookies);
+      
       const hasSession = allCookies.includes('bloom-drive-session') || 
                         allCookies.includes('a_session_');
+      
+      console.log('✅ Auth Layout - Tem sessão?', hasSession);
 
       if (hasSession) {
-        // Se tem cookie, redireciona para dashboard
+        console.log('🚀 Auth Layout - Redirecionando para dashboard...');
         router.replace('/');
       } else {
-        // Se não tem cookie, pode mostrar o layout de auth
+        console.log('📋 Auth Layout - Mostrando tela de login');
         setCheckingAuth(false);
       }
     };
 
     if (isMounted) {
+      console.log('🎬 Auth Layout - Componente montado, iniciando verificação');
       checkIfLoggedIn();
     }
   }, [isMounted, router]);
@@ -37,7 +46,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   if (checkingAuth || !isMounted) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-white dark:bg-dark-100">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand border-t-transparent"></div>
+        <div className="flex flex-col items-center space-y-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand border-t-transparent"></div>
+          <p className="text-sm text-gray-600">Verificando autenticação...</p>
+          <p className="text-xs text-gray-400">
+            {!isMounted ? 'Montando componente...' : 'Aguardando cookies...'}
+          </p>
+        </div>
       </div>
     );
   }
