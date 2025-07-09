@@ -4,13 +4,19 @@ export function middleware(request: NextRequest) {
   const sessionCookie = request.cookies.get("bloom-drive-session");
   const { pathname } = request.nextUrl;
 
-  // Rotas que requerem autenticação
-  const protectedRoutes = ['/'];
-  const authRoutes = ['/sign-in', '/sign-up'];
+  // Ignora arquivos estáticos e APIs específicas
+  if (
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/api/auth/') ||
+    pathname.startsWith('/api/check-auth') ||
+    pathname.includes('.') // arquivos estáticos
+  ) {
+    return NextResponse.next();
+  }
 
-  // Verifica se é uma rota protegida
-  const isProtectedRoute = protectedRoutes.some(route => pathname === route || pathname.startsWith(route + '/'));
-  const isAuthRoute = authRoutes.some(route => pathname === route || pathname.startsWith(route + '/'));
+  // Rotas que requerem autenticação
+  const isProtectedRoute = pathname === '/' || pathname.startsWith('/dashboard');
+  const isAuthRoute = pathname === '/sign-in' || pathname === '/sign-up';
 
   // Se é uma rota protegida e não tem sessão, redireciona para login
   if (isProtectedRoute && !sessionCookie) {
