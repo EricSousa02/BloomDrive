@@ -20,67 +20,29 @@ const AuthChecker = ({ children }: { children: React.ReactNode }) => {
     
     const checkAuth = async () => {
       try {
-        // Adiciona timeout para evitar loop infinito
-        const timeoutId = setTimeout(() => {
-          setIsChecking(false);
-        }, 3000); // 3 segundos máximo
-        
         // Verifica se há cookie de sessão do Appwrite
         const allCookies = document.cookie;
         const hasAppwriteSession = allCookies.includes('a_session_') || 
                                  allCookies.includes('bloom-drive-session') ||
                                  allCookies.includes('appwrite-session');
         
-        console.log('Todos os cookies:', allCookies);
-        console.log('Cookie de sessão Appwrite encontrado:', hasAppwriteSession);
+        console.log('🍪 Todos os cookies:', allCookies);
+        console.log('🍪 Cookie de sessão Appwrite encontrado:', hasAppwriteSession);
         
-        // Sempre tenta verificar com a API, mesmo sem cookie visível
-        // (o Appwrite pode usar httpOnly cookies)
-        console.log('🔍 Verificando autenticação com API...');
-        console.log('🔍 URL atual:', window.location.href);
-        console.log('🔍 Pathname:', window.location.pathname);
-        
-        const response = await fetch('/api/check-auth', {
-          method: 'GET',
-          credentials: 'include',
-          headers: {
-            'Cache-Control': 'no-cache',
-          }
-        });
-        
-        console.log('📡 Response received, status:', response.status);
-        console.log('📡 Response OK:', response.ok);
-        
-        clearTimeout(timeoutId);
-        
-        if (response.ok) {
-          const data = await response.json();
-          console.log('✅ Resposta da API de auth:', data);
-          console.log('✅ Status da resposta:', response.status);
-          console.log('✅ Headers da resposta:', Object.fromEntries(response.headers.entries()));
+        // ⚠️ MODO OFFLINE: Verifica apenas o cookie (sem API)
+        // Isso evita o loop infinito quando Fast Origin Transfer está esgotado
+        if (hasAppwriteSession) {
+          console.log('✅ Cookie encontrado! Redirecionando para / (modo offline)');
+          setIsRedirecting(true);
           
-          // Debug mais detalhado
-          console.log('✅ data.isAuthenticated:', data.isAuthenticated);
-          console.log('✅ Tipo de data.isAuthenticated:', typeof data.isAuthenticated);
-          
-          if (data.isAuthenticated === true) {
-            console.log('🎉 Usuário autenticado! Redirecionando para /');
-            setIsRedirecting(true);
-            
-            // Redireciona imediatamente - sem delay
+          // Redireciona após pequeno delay para mostrar o loading
+          setTimeout(() => {
             router.replace('/');
-            return;
-          } else {
-            console.log('❌ Usuário NÃO autenticado. data.isAuthenticated =', data.isAuthenticated);
-          }
-        } else {
-          console.log('❌ Erro na resposta da API de auth:', response.status);
-          const errorText = await response.text();
-          console.log('❌ Texto do erro:', errorText);
+          }, 500);
+          return;
         }
         
-        // Se chegou aqui, usuário não está autenticado
-        console.log('Usuário não autenticado, permanecendo na página de login');
+        console.log('❌ Nenhum cookie de sessão encontrado - usuário não autenticado');
         
       } catch (error) {
         console.log('Auth check error:', error);
