@@ -51,18 +51,12 @@ const AuthChecker = ({ children }: { children: React.ReactNode }) => {
           return;
         }
         
-        // Se não encontrou cookie via JavaScript, pode ser httpOnly
-        // Vamos tentar navegar para / de qualquer forma
-        console.log('🔍 Nenhum cookie encontrado via JS ou cookies httpOnly');
-        console.log('🔍 Tentando navegar para / (modo degradado)');
+        // Se não encontrou cookie via JavaScript, permanece na página de login
+        // Não tenta redirecionar para evitar loop infinito
+        console.log('🔍 Nenhum cookie encontrado via JS');
+        console.log('🔍 Permanecendo na página de login (modo seguro)');
         
-        // Modo degradado: sempre tenta ir para / quando Fast Origin Transfer está esgotado
-        // A página / agora é client-side e vai lidar com erros de auth graciosamente
-        setIsRedirecting(true);
-        
-        setTimeout(() => {
-          router.replace('/');
-        }, 500);
+        // Não redireciona - deixa o usuário na página de login
         
       } catch (error) {
         console.log('Auth check error:', error);
