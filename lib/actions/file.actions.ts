@@ -202,7 +202,10 @@ export const deleteFile = async ({
 // ============================== ESPAÇO TOTAL USADO POR ARQUIVOS
 export async function getTotalSpaceUsed() {
   try {
-    const { databases } = await createSessionClient();
+    const sessionClient = await createSessionClient();
+    if (!sessionClient) throw new Error("Sessão não encontrada");
+    
+    const { databases } = sessionClient;
     const currentUser = await getCurrentUser();
     if (!currentUser) throw new Error("Usuário não autenticado.");
 

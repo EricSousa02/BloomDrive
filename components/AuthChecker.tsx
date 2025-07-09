@@ -10,11 +10,29 @@ const AuthChecker = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Verifica se há cookie de sessão
+        // Adiciona timeout para evitar loop infinito
+        const timeoutId = setTimeout(() => {
+          setIsChecking(false);
+        }, 5000); // 5 segundos máximo
+        
+        // Verifica se há cookie de sessão antes de fazer a requisição
+        const hasSessionCookie = document.cookie.includes('bloom-drive-session');
+        
+        if (!hasSessionCookie) {
+          clearTimeout(timeoutId);
+          setIsChecking(false);
+          return;
+        }
+        
         const response = await fetch('/api/check-auth', {
           method: 'GET',
-          credentials: 'include'
+          credentials: 'include',
+          headers: {
+            'Cache-Control': 'no-cache',
+          }
         });
+        
+        clearTimeout(timeoutId);
         
         if (response.ok) {
           const data = await response.json();
@@ -24,6 +42,7 @@ const AuthChecker = ({ children }: { children: React.ReactNode }) => {
           }
         }
       } catch (error) {
+        console.log('Auth check error:', error);
         // Erro silencioso - assume que não está autenticado
       } finally {
         setIsChecking(false);

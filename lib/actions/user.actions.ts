@@ -96,7 +96,22 @@ export const verifySecret = async ({
 
 export const getCurrentUser = async () => {
   try {
-    const { databases, account } = await createSessionClient();
+    // Verifica se há cookie de sessão primeiro
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get('bloom-drive-session');
+    
+    if (!sessionCookie) {
+      return null;
+    }
+    
+    const sessionClient = await createSessionClient();
+    
+    // Se não conseguiu criar o cliente (sem sessão), retorna null
+    if (!sessionClient) {
+      return null;
+    }
+    
+    const { databases, account } = sessionClient;
 
     const result = await account.get();
 
@@ -110,15 +125,21 @@ export const getCurrentUser = async () => {
 
     return parseStringify(user.documents[0]);
   } catch (error) {
-    console.log(error);
+    // Log apenas para debug, não quebra a aplicação
+    console.log('getCurrentUser error:', error);
+    return null;
   }
 };
 
 export const signOutUser = async () => {
-  const { account } = await createSessionClient();
-
   try {
-    await account.deleteSession("current");
+    const sessionClient = await createSessionClient();
+    
+    if (sessionClient) {
+      const { account } = sessionClient;
+      await account.deleteSession("current");
+    }
+    
     (await cookies()).delete("bloom-drive-session");
   } catch (error) {
     handleError(error, "Falha ao sair do usuário");

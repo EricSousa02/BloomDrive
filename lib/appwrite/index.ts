@@ -11,7 +11,10 @@ export const createSessionClient = async () => {
 
   const session = (await cookies()).get("bloom-drive-session");
 
-  if (!session || !session.value) throw new Error("Sem sessão ativa");
+  // Em vez de throw Error, retorna null para ser tratado graciosamente
+  if (!session || !session.value) {
+    return null;
+  }
 
   client.setSession(session.value);
 
