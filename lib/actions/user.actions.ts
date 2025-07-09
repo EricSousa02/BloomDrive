@@ -82,7 +82,9 @@ export const verifySecret = async ({
     
     console.log('✅ verifySecret - Sessão criada:', session.$id);
 
-    (await cookies()).set("bloom-drive-session", session.secret, {
+    // Usar headers() do next/headers para setar o cookie no response
+    const cookieStore = await cookies();
+    cookieStore.set("bloom-drive-session", session.secret, {
       path: "/",
       httpOnly: true,
       sameSite: "strict",

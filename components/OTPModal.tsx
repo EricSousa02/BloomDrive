@@ -18,7 +18,7 @@ import {
 import React, { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { verifySecret, sendEmailOTP } from "@/lib/actions/user.actions";
+import { sendEmailOTP } from "@/lib/actions/user.actions";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 
@@ -59,22 +59,29 @@ const OtpModal = ({
     }
 
     try {
-      console.log('🔐 OTP Modal - Verificando código...');
-      const sessionId = await verifySecret({ accountId, password });
+      console.log('🔐 OTP Modal - Verificando código via API...');
+      
+      // Chama diretamente a API route do client-side
+      const response = await fetch('/api/auth/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ accountId, password }),
+      });
 
-      if (sessionId) {
-        console.log('✅ OTP Modal - Login bem-sucedido! SessionId:', sessionId);
-        console.log('🍪 OTP Modal - Cookies após login:', document.cookie);
-        
-        // Aguarda um pouco para o cookie estar disponível
-        setTimeout(() => {
-          console.log('🚀 OTP Modal - Redirecionando para dashboard...');
-          router.push("/");
-        }, 500);
-      } else {
-        console.log('❌ OTP Modal - SessionId não retornado');
-        setError("Código OTP inválido. Verifique e tente novamente.");
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Falha na verificação');
       }
+
+      const data = await response.json();
+      console.log('✅ OTP Modal - Login bem-sucedido via API! SessionId:', data.sessionId);
+      console.log('🍪 OTP Modal - Cookies após login:', document.cookie);
+      
+      // Redirecionamento imediato com window.location para garantir o cookie
+      console.log('🚀 OTP Modal - Redirecionando para dashboard...');
+      window.location.href = "/";
     } catch (error) {
       console.log('❌ OTP Modal - Erro na verificação:', error);
       setError("Código OTP inválido. Verifique e tente novamente.");
