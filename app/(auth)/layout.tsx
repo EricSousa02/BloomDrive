@@ -11,7 +11,7 @@
  * Agora a verificação de auth é feita apenas no layout root.
  */
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Image from "next/image";
 // AuthChecker removido para evitar loop de redirecionamento
 import { SimpleThemeToggle } from "@/components/SimpleThemeToggle";
@@ -19,32 +19,14 @@ import { useSimpleTheme } from "@/components/SimpleThemeProvider";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const { isDark, isMounted } = useSimpleTheme();
-  const [hasRefreshed, setHasRefreshed] = useState(false);
 
-  // Força refresh ao entrar na página de login para que a Vercel veja os cookies
-  useEffect(() => {
-    if (isMounted && !hasRefreshed) {
-      const hasRefreshedBefore = sessionStorage.getItem('login-refreshed');
-      
-      if (!hasRefreshedBefore) {
-        sessionStorage.setItem('login-refreshed', 'true');
-        window.location.reload();
-        return;
-      }
-      
-      setHasRefreshed(true);
-    }
-  }, [isMounted, hasRefreshed]);
-
-  // Loading enquanto monta ou while refreshing
-  if (!isMounted || !hasRefreshed) {
+  // Loading enquanto monta
+  if (!isMounted) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-white dark:bg-dark-100">
         <div className="flex flex-col items-center space-y-4">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand border-t-transparent"></div>
-          <p className="text-sm text-gray-600">
-            {!isMounted ? 'Carregando...' : 'Verificando autenticação...'}
-          </p>
+          <p className="text-sm text-gray-600">Carregando...</p>
         </div>
       </div>
     );
