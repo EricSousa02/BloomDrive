@@ -127,13 +127,23 @@ export const signOutUser = async () => {
       const { account } = sessionClient;
       await account.deleteSession("current");
     }
-    
-    (await cookies()).delete("bloom-drive-session");
   } catch (error) {
-    handleError(error, "Falha ao sair do usuário");
-  } finally {
-    redirect("/sign-in");
+    // Continua mesmo se der erro para garantir limpeza local
   }
+  
+  try {
+    // Força a remoção do cookie
+    const cookieStore = await cookies();
+    cookieStore.delete("bloom-drive-session");
+    
+    // Remove também possíveis cookies do Appwrite
+    cookieStore.delete("a_session_" + appwriteConfig.projectId);
+    cookieStore.delete("a_session_" + appwriteConfig.projectId + "_legacy");
+  } catch (error) {
+    // Ignora erros de cookie
+  }
+  
+  redirect("/sign-in");
 };
 
 export const signInUser = async ({ email }: { email: string }) => {
@@ -149,5 +159,28 @@ export const signInUser = async ({ email }: { email: string }) => {
     return parseStringify({ accountId: null, error: "Usuário não encontrado" });
   } catch (error) {
     handleError(error, "Falha ao entrar no usuário");
+  }
+};
+
+export const forceLogout = async () => {
+  try {
+    // Tenta fazer logout normal primeiro
+    await signOutUser();
+  } catch (error) {
+    // Se falhar, força limpeza manual
+    try {
+      const cookieStore = await cookies();
+      
+      // Remove todos os cookies relacionados
+      cookieStore.delete("bloom-drive-session");
+      cookieStore.delete("a_session_" + appwriteConfig.projectId);
+      cookieStore.delete("a_session_" + appwriteConfig.projectId + "_legacy");
+      
+    } catch (cookieError) {
+      // Se mesmo a limpeza de cookies falhar, continua
+    }
+    
+    // Força redirecionamento para login
+    redirect("/sign-in");
   }
 };

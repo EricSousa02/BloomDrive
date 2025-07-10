@@ -20,15 +20,12 @@ const AuthChecker = ({ children }: { children: React.ReactNode }) => {
     
     const checkAuth = async () => {
       try {
-        // Verifica se há cookie de sessão do Appwrite (modo offline)
+        // Verifica se há cookie de sessão específico do BloomDrive
         const allCookies = document.cookie;
-        const hasAppwriteSession = allCookies.includes('a_session_') || 
-                                 allCookies.includes('bloom-drive-session') ||
-                                 allCookies.includes('appwrite-session');
+        const hasBloomDriveSession = allCookies.includes('bloom-drive-session');
         
-        // Modo offline: verifica apenas o cookie (sem API)
-        // Isso evita o loop infinito quando Fast Origin Transfer está esgotado
-        if (hasAppwriteSession) {
+        // Se tem sessão do BloomDrive, redireciona para dashboard
+        if (hasBloomDriveSession) {
           setIsRedirecting(true);
           
           // Redireciona após pequeno delay para mostrar o loading
@@ -36,6 +33,18 @@ const AuthChecker = ({ children }: { children: React.ReactNode }) => {
             router.replace('/');
           }, 500);
           return;
+        }
+        
+        // Limpa cookies antigos do Appwrite se existirem
+        const appwriteCookies = document.cookie.split(';').filter(cookie => 
+          cookie.trim().startsWith('a_session_')
+        );
+        
+        if (appwriteCookies.length > 0) {
+          appwriteCookies.forEach(cookie => {
+            const cookieName = cookie.split('=')[0].trim();
+            document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+          });
         }
         
       } catch (error) {
