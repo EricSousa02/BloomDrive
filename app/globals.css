@@ -749,6 +749,15 @@
   .delete-file-name {
     @apply max-w-[200px] !important;
   }
+  
+  /* Input de email no modal de compartilhamento - mobile */
+  .share-input-field {
+    @apply h-[44px] !important;
+  }
+  
+  .add-user-button {
+    @apply h-[44px] px-3 text-sm !important;
+  }
 }
 
 /* Correções para telas muito pequenas */
