@@ -1,3 +1,13 @@
+/*
+ * TODO: TEMPORÁRIO - Fast Origin Transfer da Vercel
+ * 
+ * Verificações de propriedade foram comentadas temporariamente.
+ * Atualmente TODOS os usuários podem adicionar e remover usuários do compartilhamento.
+ * 
+ * PRÓXIMO MÊS: Descomentar todas as verificações marcadas com "TODO"
+ * quando o Fast Origin Transfer estiver ativo novamente.
+ */
+
 import { Models } from "node-appwrite";
 import Thumbnail from "@/components/Thumbnail";
 import FormattedDateTime from "@/components/FormattedDateTime";
@@ -146,7 +156,9 @@ export const ShareInput = ({ file, onInputChange, onRemove, isOwner = false }: P
           <span>com outros usuários</span>
         </div>
         
-        {isOwner ? (
+        {/* TODO: Descomentar próximo mês quando Fast Origin Transfer estiver ativo */}
+        {/* {isOwner ? ( */}
+        {true ? ( // Temporariamente todos podem adicionar emails
           <>
             <div className="flex flex-col sm:flex-row gap-2 mt-2">
               <Input
@@ -172,11 +184,13 @@ export const ShareInput = ({ file, onInputChange, onRemove, isOwner = false }: P
             </p>
           </>
         ) : (
-          <div className="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
-            <p className="text-xs sm:text-sm text-gray-600 text-center">
-              📋 Apenas o proprietário pode adicionar ou remover usuários do compartilhamento
-            </p>
-          </div>
+          // TODO: Descomentar próximo mês quando Fast Origin Transfer estiver ativo
+          // <div className="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
+          //   <p className="text-xs sm:text-sm text-gray-600 text-center">
+          //     📋 Apenas o proprietário pode adicionar ou remover usuários do compartilhamento
+          //   </p>
+          // </div>
+          <></>
         )}
 
         {/* Mensagem de sucesso */}
@@ -249,7 +263,9 @@ export const ShareInput = ({ file, onInputChange, onRemove, isOwner = false }: P
                     </div>
                     <p className="subtitle-2 truncate min-w-0" title={email}>{email}</p>
                   </div>
-                  {isOwner && (
+                  {/* TODO: Descomentar próximo mês quando Fast Origin Transfer estiver ativo */}
+                  {/* {isOwner && ( */}
+                  {true && ( // Temporariamente todos podem remover usuários
                     <Button
                       onClick={() => onRemove(email)}
                       className="share-remove-user hover:bg-red-100"
@@ -264,6 +280,7 @@ export const ShareInput = ({ file, onInputChange, onRemove, isOwner = false }: P
                       />
                     </Button>
                   )}
+                  {/* )} */}
                 </li>
               ))}
             </ul>

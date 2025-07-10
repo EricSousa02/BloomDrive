@@ -1,5 +1,23 @@
 "use client";
 
+/*
+ * TODO: TEMPORÁRIO - Fast Origin Transfer da Vercel
+ * 
+ * Todas as verificações de propriedade foram comentadas temporariamente
+ * devido ao problema do Fast Origin Transfer da Vercel estar esgotado.
+ * 
+ * Atualmente TODOS os usuários podem:
+ * - Renomear arquivos
+ * - Deletar arquivos  
+ * - Compartilhar arquivos
+ * - Remover usuários do compartilhamento
+ * 
+ * A função "Sair do compartilhamento" foi desativada temporariamente.
+ * 
+ * PRÓXIMO MÊS: Descomentar todas as verificações marcadas com "TODO"
+ * quando o Fast Origin Transfer estiver ativo novamente.
+ */
+
 import {
   Dialog,
   DialogContent,
@@ -49,64 +67,77 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
   const [name, setName] = useState(() => getFileNameWithoutExtension(file.name));
   const [isLoading, setIsLoading] = useState(false);
   const [emails, setEmails] = useState<string[]>([]);
-  const [currentUser, setCurrentUser] = useState<any>(null);
-  const [isUserLoaded, setIsUserLoaded] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  // TODO: Descomentar próximo mês quando Fast Origin Transfer estiver ativo
+  // const [currentUser, setCurrentUser] = useState<any>(null);
+  // const [isUserLoaded, setIsUserLoaded] = useState(false);
+  // const [isMounted, setIsMounted] = useState(false);
 
   const path = usePathname();
 
-  // Garantir que o componente está montado no cliente
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  // TODO: Descomentar próximo mês quando Fast Origin Transfer estiver ativo
+  // // Garantir que o componente está montado no cliente
+  // useEffect(() => {
+  //   setIsMounted(true);
+  // }, []);
 
   // Atualiza o nome quando o arquivo é alterado (após renomeação)
   useEffect(() => {
     setName(getFileNameWithoutExtension(file.name));
   }, [file.name]);
 
-  // Busca o usuário atual ao montar o componente
-  useEffect(() => {
-    const fetchCurrentUser = async () => {
-      try {
-        const response = await fetch('/api/check-auth', {
-          method: 'GET',
-          credentials: 'include'
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          if (data.isAuthenticated && data.user) {
-            setCurrentUser(data.user);
-          }
-        }
-      } catch (error) {
-        // Erro silencioso - usuário não autenticado
-      } finally {
-        setIsUserLoaded(true);
-      }
-    };
+  // TODO: Descomentar próximo mês quando Fast Origin Transfer estiver ativo
+  // // Busca o usuário atual ao montar o componente
+  // useEffect(() => {
+  //   const fetchCurrentUser = async () => {
+  //     try {
+  //       const response = await fetch('/api/check-auth', {
+  //         method: 'GET',
+  //         credentials: 'include'
+  //       });
+  //       
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         if (data.isAuthenticated && data.user) {
+  //           setCurrentUser(data.user);
+  //         }
+  //       }
+  //     } catch (error) {
+  //       // Erro silencioso - usuário não autenticado
+  //     } finally {
+  //       setIsUserLoaded(true);
+  //     }
+  //   };
+  //
+  //   fetchCurrentUser();
+  // }, []);
 
-    fetchCurrentUser();
-  }, []);
-
-  // Verifica se o usuário atual é o dono do arquivo
-  const isOwner = currentUser && file.owner && currentUser.accountId === file.owner.accountId;
+  // TODO: Descomentar próximo mês quando Fast Origin Transfer estiver ativo
+  // // Verifica se o usuário atual é o dono do arquivo
+  // const isOwner = currentUser && file.owner && currentUser.accountId === file.owner.accountId;
 
   // Filtra as ações baseado nas permissões
   const getAvailableActions = () => {
-    if (!isMounted || !isUserLoaded || !currentUser) return actionsDropdownItems;
-    
+    // TODO: Temporariamente permitindo todas as ações para todos os usuários
+    // devido ao problema do Fast Origin Transfer da Vercel
     return actionsDropdownItems.filter(action => {
-      // Apenas o dono pode renomear e deletar
-      if (action.value === 'rename' || action.value === 'delete') {
-        return isOwner;
-      }
-      // Apenas quem não é dono pode sair do compartilhamento
+      // TODO: Descomentar próximo mês quando Fast Origin Transfer estiver ativo
+      // if (!isMounted || !isUserLoaded || !currentUser) return actionsDropdownItems;
+      // 
+      // // Apenas o dono pode renomear e deletar
+      // if (action.value === 'rename' || action.value === 'delete') {
+      //   return isOwner;
+      // }
+      // // Apenas quem não é dono pode sair do compartilhamento
+      // if (action.value === 'leave') {
+      //   return !isOwner;
+      // }
+      
+      // Comentado: função de sair do compartilhamento (será reativada próximo mês)
       if (action.value === 'leave') {
-        return !isOwner;
+        return false; // Temporariamente desativado
       }
-      // Todos podem ver detalhes, compartilhar e baixar
+      
+      // Todos podem ver detalhes, compartilhar, renomear, deletar e baixar
       return true;
     });
   };
@@ -123,16 +154,17 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
   const handleAction = async () => {
     if (!action) return;
     
-    // Verificação adicional de segurança no cliente
-    if ((action.value === 'rename' || action.value === 'delete') && !isOwner) {
-      alert('Apenas o proprietário pode realizar esta ação.');
-      return;
-    }
-
-    if (action.value === 'leave' && isOwner) {
-      alert('O proprietário não pode sair do próprio compartilhamento.');
-      return;
-    }
+    // TODO: Descomentar próximo mês quando Fast Origin Transfer estiver ativo
+    // // Verificação adicional de segurança no cliente
+    // if ((action.value === 'rename' || action.value === 'delete') && !isOwner) {
+    //   alert('Apenas o proprietário pode realizar esta ação.');
+    //   return;
+    // }
+    //
+    // if (action.value === 'leave' && isOwner) {
+    //   alert('O proprietário não pode sair do próprio compartilhamento.');
+    //   return;
+    // }
 
     // Validação para o nome do arquivo
     if (action.value === 'rename' && (!name || name.trim() === '')) {
@@ -160,11 +192,12 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
   };
 
   const handleRemoveUser = async (email: string) => {
-    // Verificação de segurança: apenas o dono pode remover usuários
-    if (!isOwner) {
-      alert('Apenas o proprietário do arquivo pode remover usuários do compartilhamento.');
-      return;
-    }
+    // TODO: Descomentar próximo mês quando Fast Origin Transfer estiver ativo
+    // // Verificação de segurança: apenas o dono pode remover usuários
+    // if (!isOwner) {
+    //   alert('Apenas o proprietário do arquivo pode remover usuários do compartilhamento.');
+    //   return;
+    // }
 
     const updatedEmails = emails.filter((e) => e !== email);
 
@@ -209,7 +242,9 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
               file={file}
               onInputChange={setEmails}
               onRemove={handleRemoveUser}
-              isOwner={isOwner}
+              // TODO: Descomentar próximo mês quando Fast Origin Transfer estiver ativo
+              // isOwner={isOwner}
+              isOwner={true} // Temporariamente todos podem remover usuários
             />
           )}
           {value === "delete" && (
@@ -274,7 +309,8 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
           <DropdownMenuLabel className="max-w-[200px] truncate">
             <div className="flex flex-col">
               <span className="truncate max-w-[180px]">{file.name}</span>
-              {isMounted && isUserLoaded && (
+              {/* TODO: Descomentar próximo mês quando Fast Origin Transfer estiver ativo */}
+              {/* {isMounted && isUserLoaded && (
               <>
                 {isOwner ? (
                 <span className="text-xs text-brand font-medium truncate">
@@ -286,7 +322,7 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
                 </span>
                 )}
               </>
-              )}
+              )} */}
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
