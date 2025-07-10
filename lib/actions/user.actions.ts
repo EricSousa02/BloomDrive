@@ -1,5 +1,17 @@
 "use server";
 
+/*
+ * CORREÇÃO: Sistema de Logout Aprimorado
+ * 
+ * O signOutUser agora usa cookieStore.set(..., "", { maxAge: 0 }) em vez de delete()
+ * para garantir que os cookies sejam realmente removidos no navegador.
+ * 
+ * Métodos de logout disponíveis:
+ * 1. Server Action: signOutUser() - usado no Header (recomendado)
+ * 2. API Route: /api/logout - backup para logout via GET/POST
+ * 3. Hook: useLogout() - para logout no lado do cliente quando necessário
+ */
+
 import { createAdminClient, createSessionClient } from "@/lib/appwrite";
 import { appwriteConfig } from "@/lib/appwrite/config";
 import { Query, ID } from "node-appwrite";
@@ -120,29 +132,43 @@ export const getCurrentUser = async () => {
 };
 
 export const signOutUser = async () => {
+  "use server";
+  
   try {
     const sessionClient = await createSessionClient();
     
     if (sessionClient) {
       const { account } = sessionClient;
-      // Deleta todas as sessões, não apenas a atual
+      // Deleta todas as sessões no Appwrite
       await account.deleteSessions();
     }
   } catch (error) {
     // Continua mesmo se der erro para garantir limpeza local
+    console.log("Erro ao deletar sessões no Appwrite:", error);
   }
   
-  try {
-    // Força a remoção do cookie
-    const cookieStore = await cookies();
-    cookieStore.delete("bloom-drive-session");
-    
-    // Remove também possíveis cookies do Appwrite
-    cookieStore.delete("a_session_" + appwriteConfig.projectId);
-    cookieStore.delete("a_session_" + appwriteConfig.projectId + "_legacy");
-  } catch (error) {
-    // Ignora erros de cookie
-  }
+  // Força a remoção dos cookies no response atual
+  const cookieStore = await cookies();
+  
+  // Remove o cookie principal
+  cookieStore.set("bloom-drive-session", "", {
+    path: "/",
+    httpOnly: true,
+    maxAge: 0, // Expira imediatamente
+    sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
+  });
+  
+  // Remove possíveis cookies do Appwrite
+  cookieStore.set("a_session_" + appwriteConfig.projectId, "", {
+    path: "/",
+    maxAge: 0,
+  });
+  
+  cookieStore.set("a_session_" + appwriteConfig.projectId + "_legacy", "", {
+    path: "/",
+    maxAge: 0,
+  });
   
   redirect("/sign-in");
 };
