@@ -138,7 +138,7 @@ export const ShareInput = ({ file, onInputChange, onRemove, isOwner = false }: P
         <div className="subtitle-2 pl-1 text-light-100 mb-2 flex items-center gap-1 flex-wrap">
           <span>Compartilhar arquivo</span>
           <span 
-            className={`text-brand font-semibold ${file.name.length > 40 ? 'truncate max-w-[200px]' : ''}`}
+            className={`text-brand font-semibold ${file.name.length > 20 ? 'truncate max-w-[120px] sm:max-w-[200px]' : ''}`}
             title={file.name}
           >
             "{file.name}"
@@ -148,7 +148,7 @@ export const ShareInput = ({ file, onInputChange, onRemove, isOwner = false }: P
         
         {isOwner ? (
           <>
-            <div className="flex gap-2 mt-2">
+            <div className="flex flex-col sm:flex-row gap-2 mt-2">
               <Input
                 type="email"
                 placeholder="exemplo@email.com"
@@ -159,7 +159,7 @@ export const ShareInput = ({ file, onInputChange, onRemove, isOwner = false }: P
               />
               <Button
                 onClick={handleAddEmails}
-                className="add-user-button"
+                className="add-user-button w-full sm:w-auto"
                 disabled={!inputEmail.trim()}
               >
                 Adicionar
@@ -167,13 +167,13 @@ export const ShareInput = ({ file, onInputChange, onRemove, isOwner = false }: P
             </div>
 
             {/* Dica de uso */}
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">
               💡 Dica: Você pode adicionar vários e-mails separados por vírgula
             </p>
           </>
         ) : (
           <div className="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-200">
-            <p className="text-sm text-gray-600 text-center">
+            <p className="text-xs sm:text-sm text-gray-600 text-center">
               📋 Apenas o proprietário pode adicionar ou remover usuários do compartilhamento
             </p>
           </div>
@@ -181,10 +181,10 @@ export const ShareInput = ({ file, onInputChange, onRemove, isOwner = false }: P
 
         {/* Mensagem de sucesso */}
         {successMessage && (
-          <div className="flex items-center gap-2 text-sm text-brand mt-2 bg-brand/10 p-3 rounded-lg border border-brand/20 shadow-sm">
+          <div className="flex items-center gap-2 text-xs sm:text-sm text-brand mt-2 bg-brand/10 p-3 rounded-lg border border-brand/20 shadow-sm">
             <div className="flex-shrink-0">
               <svg 
-                className="w-5 h-5 text-brand" 
+                className="w-4 h-4 sm:w-5 sm:h-5 text-brand" 
                 fill="currentColor" 
                 viewBox="0 0 20 20"
               >
@@ -195,7 +195,7 @@ export const ShareInput = ({ file, onInputChange, onRemove, isOwner = false }: P
                 />
               </svg>
             </div>
-            <span className="font-medium">{successMessage}</span>
+            <span className="font-medium break-words">{successMessage}</span>
           </div>
         )}
 

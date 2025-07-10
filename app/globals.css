@@ -201,7 +201,7 @@
     @apply w-full flex gap-1 sm:gap-2 justify-between !important;
   }
   .shad-otp-slot {
-    @apply text-[40px] font-medium rounded-xl ring-brand shadow-drop-1 text-brand-100 justify-center flex border-2 border-light-300 size-12 md:size-16 gap-5 !important;
+    @apply text-2xl sm:text-[40px] font-medium rounded-xl ring-brand shadow-drop-1 text-brand-100 justify-center flex border-2 border-light-300 size-10 sm:size-12 md:size-16 !important;
   }
   .dark .shad-otp-slot {
     @apply text-brand-dark border-light-200/30 !important;
@@ -231,7 +231,10 @@
     }
   }
   .shad-dialog {
-    @apply rounded-[26px] w-[90%] max-w-[400px] px-6 py-8   !important;
+    @apply rounded-[26px] w-[90%] max-w-[400px] px-6 py-8 !important;
+  }
+  .dark .shad-dialog {
+    @apply bg-dark-200 border border-light-200/20 !important;
   }
   .shad-chart-title {
     @apply text-white !important;
@@ -719,5 +722,42 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Correções específicas para mobile - sem quebrar desktop */
+@media (max-width: 640px) {
+  .shad-alert-dialog {
+    @apply max-w-[95%] px-3 py-6 !important;
+  }
+  
+  .shad-dialog {
+    @apply max-w-[95%] px-4 py-6 !important;
+    max-height: calc(100vh - 2rem) !important;
+    overflow-y: auto !important;
+  }
+  
+  .otp-close-button {
+    @apply -right-2 -top-6 !important;
+  }
+  
+  .modal-cancel-button,
+  .modal-submit-button {
+    @apply text-sm py-2 !important;
+  }
+  
+  .delete-file-name {
+    @apply max-w-[200px] !important;
+  }
+}
+
+/* Correções para telas muito pequenas */
+@media (max-width: 400px) {
+  .shad-otp-slot {
+    @apply size-8 text-lg !important;
+  }
+  
+  .shad-otp {
+    @apply gap-1 !important;
   }
 }

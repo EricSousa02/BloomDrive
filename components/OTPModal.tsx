@@ -130,7 +130,7 @@ const OtpModal = ({
           </AlertDialogTitle>
           <AlertDialogDescription className="subtitle-2 text-center text-light-100">
             Enviamos um código para{" "}
-            <span className="pl-1 text-brand">{email}</span>
+            <span className="pl-1 text-brand break-all">{email}</span>
           </AlertDialogDescription>
           <p className="caption text-center text-light-200 mt-2">
             Digite o código ou cole (Ctrl+V) diretamente
@@ -154,7 +154,7 @@ const OtpModal = ({
         </InputOTP>
 
         {error && (
-          <div className="error-message mt-2">
+          <div className="error-message mt-2 text-center">
             {error}
           </div>
         )}
