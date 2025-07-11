@@ -144,7 +144,6 @@ export const signOutUser = async () => {
     }
   } catch (error) {
     // Continua mesmo se der erro para garantir limpeza local
-    console.log("Erro ao deletar sessões no Appwrite:", error);
   }
   
   // Força a remoção dos cookies no response atual

@@ -4,9 +4,6 @@ export function middleware(request: NextRequest) {
   const sessionCookie = request.cookies.get("bloom-drive-session");
   const { pathname } = request.nextUrl;
 
-  // Debug: log para verificar redirecionamentos
-  console.log('Middleware:', { pathname, hasSession: !!sessionCookie });
-
   // Rotas que requerem autenticação
   const protectedRoutes = ['/'];
   const authRoutes = ['/sign-in', '/sign-up'];
@@ -22,13 +19,11 @@ export function middleware(request: NextRequest) {
 
   // Se é uma rota protegida e não tem sessão, redireciona para login
   if (isProtectedRoute && !sessionCookie) {
-    console.log('Redirecting to sign-in: no session');
     return NextResponse.redirect(new URL('/sign-in', request.url));
   }
 
   // Se é uma rota de auth e tem sessão, redireciona para dashboard
   if (isAuthRoute && sessionCookie) {
-    console.log('Redirecting to dashboard: has session');
     return NextResponse.redirect(new URL('/', request.url));
   }
 
