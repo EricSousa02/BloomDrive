@@ -12,7 +12,7 @@ export async function GET() {
       await account.deleteSessions();
     }
   } catch (error) {
-    console.log("Erro ao deletar sessões no Appwrite:", error);
+    // Silencioso - continua a limpeza mesmo se falhar
   }
 
   // Cria response de redirecionamento
