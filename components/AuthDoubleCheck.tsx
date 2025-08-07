@@ -6,36 +6,30 @@ import { getCurrentUser } from "@/lib/actions/user.actions";
 
 export const AuthDoubleCheck = () => {
   const router = useRouter();
-  const [isChecking, setIsChecking] = useState(false);
+  const [hasChecked, setHasChecked] = useState(false); // ✅ Controla se já verificou
   const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
+    // ✅ Só executa se ainda não verificou
+    if (hasChecked) return;
+
     // Double-check após 1 segundo do carregamento da página
     const checkAuthAfterDelay = setTimeout(async () => {
-      if (isChecking) return; // Evita múltiplas verificações
-      
-      setIsChecking(true);
-      setShowFeedback(true); // Mostra feedback discreto
+      setHasChecked(true); // ✅ Marca como verificado ANTES de começar
+      setShowFeedback(true);
       
       try {
-        console.log("🔍 AuthDoubleCheck: Verificando autenticação após 1s...");
-        
         const user = await getCurrentUser();
         
         if (user) {
-          console.log("✅ AuthDoubleCheck: Usuário autenticado, redirecionando para dashboard");
           router.replace("/");
         } else {
-          console.log("❌ AuthDoubleCheck: Usuário não autenticado, permanecendo na tela de login");
           // Remove feedback se não há redirecionamento
           setTimeout(() => setShowFeedback(false), 500);
         }
       } catch (error) {
-        console.log("⚠️ AuthDoubleCheck: Erro na verificação:", error);
         // Remove feedback em caso de erro
         setTimeout(() => setShowFeedback(false), 500);
-      } finally {
-        setIsChecking(false);
       }
     }, 1000); // 1 segundo
 
@@ -43,7 +37,7 @@ export const AuthDoubleCheck = () => {
     return () => {
       clearTimeout(checkAuthAfterDelay);
     };
-  }, [router, isChecking]);
+  }, [router, hasChecked]); // ✅ Dependency em hasChecked
 
   // Feedback visual mais visível (só aparece se estiver verificando)
   if (showFeedback) {
