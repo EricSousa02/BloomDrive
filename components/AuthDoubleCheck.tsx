@@ -10,7 +10,7 @@ export const AuthDoubleCheck = () => {
   const [showFeedback, setShowFeedback] = useState(false);
 
   useEffect(() => {
-    // Double-check após 2 segundos do carregamento da página
+    // Double-check após 1 segundo do carregamento da página
     const checkAuthAfterDelay = setTimeout(async () => {
       if (isChecking) return; // Evita múltiplas verificações
       
@@ -18,7 +18,7 @@ export const AuthDoubleCheck = () => {
       setShowFeedback(true); // Mostra feedback discreto
       
       try {
-        console.log("🔍 AuthDoubleCheck: Verificando autenticação após 2s...");
+        console.log("🔍 AuthDoubleCheck: Verificando autenticação após 1s...");
         
         const user = await getCurrentUser();
         
@@ -37,7 +37,7 @@ export const AuthDoubleCheck = () => {
       } finally {
         setIsChecking(false);
       }
-    }, 2000); // 2 segundos
+    }, 1000); // 1 segundo
 
     // Cleanup
     return () => {
@@ -45,12 +45,12 @@ export const AuthDoubleCheck = () => {
     };
   }, [router, isChecking]);
 
-  // Feedback visual discreto (só aparece se estiver verificando)
+  // Feedback visual mais visível (só aparece se estiver verificando)
   if (showFeedback) {
     return (
-      <div className="fixed top-4 right-4 bg-brand/90 text-white px-3 py-1 rounded text-xs flex items-center gap-2 z-50">
-        <div className="animate-spin h-3 w-3 border border-white border-t-transparent rounded-full"></div>
-        Verificando...
+      <div className="fixed top-6 right-6 bg-brand/95 text-white px-6 py-3 rounded-lg text-sm font-medium flex items-center gap-3 z-50 shadow-lg">
+        <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+        Verificando autenticação...
       </div>
     );
   }
