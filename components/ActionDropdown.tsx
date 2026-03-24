@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 /*
@@ -37,7 +38,6 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Models } from "node-appwrite";
 import { actionsDropdownItems } from "@/constants";
-import Link from "next/link";
 import { constructSecureDownloadUrl } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -99,7 +99,11 @@ const ActionDropdown = ({ file }: { file: Models.Document }) => {
           }
         }
       } catch (error) {
-        // Erro silencioso - usuário não autenticado
+        // Em desenvolvimento, loga o erro para debug
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Erro ao verificar autenticação do usuário:', error);
+        }
+        // Erro silencioso em produção - usuário não autenticado
       } finally {
         setIsUserLoaded(true);
       }
