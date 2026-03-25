@@ -172,6 +172,29 @@ export const signOutUser = async () => {
   redirect("/sign-in");
 };
 
+export const updateUserTheme = async ({ theme }: { theme: "light" | "dark" }) => {
+  try {
+    const user = await getCurrentUser();
+    if (!user) throw new Error("Usuário não encontrado");
+
+    const sessionClient = await createSessionClient();
+    if (!sessionClient) throw new Error("Sessão inválida");
+
+    const { databases } = sessionClient;
+
+    await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.usersCollectionId,
+      user.$id,
+      { theme },
+    );
+
+    return parseStringify({ success: true });
+  } catch (error) {
+    handleError(error, "Falha ao atualizar tema");
+  }
+};
+
 export const signInUser = async ({ email }: { email: string }) => {
   try {
     const existingUser = await getUserByEmail(email);

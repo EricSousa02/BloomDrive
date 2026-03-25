@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { getCurrentUser, updateUserTheme } from "@/lib/actions/user.actions";
 
 type Theme = "light" | "dark";
 
@@ -17,11 +18,30 @@ export function SimpleThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>("light");
   const [isMounted, setIsMounted] = useState(false);
 
+  // Carrega o tema do banco de dados ao montar
   useEffect(() => {
-    setIsMounted(true);
+    const loadThemeFromDatabase = async () => {
+      try {
+        const user = await getCurrentUser();
+        if (user && user.theme && ["light", "dark"].includes(user.theme)) {
+          setTheme(user.theme);
+          
+          // Aplica a classe no HTML
+          if (typeof window !== "undefined") {
+            document.documentElement.classList.remove("light", "dark");
+            document.documentElement.classList.add(user.theme);
+          }
+        }
+      } catch (error) {
+        console.warn("Falha ao carregar tema do banco:", error);
+      }
+      setIsMounted(true);
+    };
+
+    loadThemeFromDatabase();
   }, []);
 
-  const toggleTheme = () => {
+  const toggleTheme = async () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
     
@@ -29,6 +49,13 @@ export function SimpleThemeProvider({ children }: { children: ReactNode }) {
     if (typeof window !== "undefined") {
       document.documentElement.classList.remove("light", "dark");
       document.documentElement.classList.add(newTheme);
+    }
+
+    // Salva o novo tema no banco de dados
+    try {
+      await updateUserTheme({ theme: newTheme });
+    } catch (error) {
+      console.warn("Falha ao salvar tema no banco:", error);
     }
   };
 
