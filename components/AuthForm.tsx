@@ -218,7 +218,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
 
           {/* Indicador de validade do formulário */}
           {Object.keys(form.formState.errors).length > 0 && (
-            <div className="caption text-red-500 text-center">
+            <div className="caption text-red-500 dark:text-red text-center">
               Por favor, corrija os erros acima para continuar
             </div>
           )}
