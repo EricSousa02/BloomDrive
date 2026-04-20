@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   experimental: {
     serverActions: {
-      bodySizeLimit: "50MB",
+      bodySizeLimit: "60MB",
     },
     // Reduz overhead de bundle
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],

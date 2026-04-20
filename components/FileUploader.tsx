@@ -44,7 +44,7 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
             description: (
               <p className="body-2 text-white">
                 <span className="font-semibold">{file.name}</span> é muito grande.
-                O tamanho máximo do arquivo é 50MB.
+                O tamanho máximo do arquivo é 60MB.
               </p>
             ),
             className: "error-toast",
